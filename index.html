@@ -50,7 +50,7 @@
 
     nav a:hover{
       color: var(--accent);
-      transform: scale(1.12);
+      transform: scale(1.08);
       text-shadow: 0 0 8px rgba(255,0,0,0.55);
     }
 
@@ -82,7 +82,7 @@
       flex-direction:column;
       align-items:center;
       width:fit-content;
-      background: none; /* removed background */
+      background: none;
     }
 
     /* Grid */
@@ -103,14 +103,15 @@
 
     .port-card-link:focus .port-card { box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
 
+    /* Removed glow/shadow on hover */
     .port-card-link:hover .port-card{
       transform: scale(1.05);
-      box-shadow: 0 0 18px rgba(255,0,0,0.25);
+      box-shadow: none;
     }
 
     .port-card img{
       width:200px;
-      border-radius:15px; /* updated */
+      border-radius:15px;
       margin-bottom:0.5rem;
       display:block;
       object-fit:cover;
@@ -143,6 +144,12 @@
       border:none !important;
       outline:none !important;
       box-shadow:none !important;
+      transition: transform .18s ease;
+    }
+
+    /* Grow dashboard button when hovered */
+    .dashboard-btn:hover{
+      transform: scale(1.1);
     }
 
     .dash-icon{
@@ -226,9 +233,10 @@
       transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
     }
 
+    /* footer text smaller on hover */
     footer a:hover{
       color: var(--accent);
-      transform: scale(1.12);
+      transform: scale(1.05);
       text-shadow: 0 0 8px rgba(255,0,0,0.55);
     }
 
@@ -281,6 +289,7 @@
     <a href="#">discord</a>
     <a href="#">suggestions & bug fixes</a>
     <a href="#">other projects</a>
+    © <span id="year"></span>
   </footer>
 
 <script>
@@ -312,21 +321,6 @@
     });
     document.addEventListener('keydown', e => { if(e.key==='Escape') closePanel(); });
   }
-
-  function updateBackgroundScroll() {
-    try {
-      const scrollTop = window.scrollY || window.pageYOffset || 0;
-      const docHeight = Math.max(document.body.scrollHeight - window.innerHeight, 0);
-      let scrollPercent = docHeight > 0 ? (scrollTop / docHeight) : 0;
-      const slowFactor = 0.22;
-      let mapped = Math.min(Math.max(scrollPercent * slowFactor, 0), slowFactor);
-      document.body.style.backgroundPosition = 'center ' + (mapped * 100) + '%';
-    } catch (err) { console.error('bg scroll error', err); }
-  }
-
-  window.addEventListener('scroll', updateBackgroundScroll, { passive: true });
-  window.addEventListener('resize', updateBackgroundScroll);
-  updateBackgroundScroll();
 
   const portContainer = document.getElementById('portContainer');
 

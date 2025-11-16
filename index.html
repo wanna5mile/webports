@@ -5,414 +5,373 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Web-Ported - WebGL ports</title>
 
-  <style>
-    :root{
-      --bg: #000000;
-      --text: #ffffff;
-      --accent: #ff3b3b;
-      --muted: #bdbdbd;
-    }
+<style>
+:root{
+  --bg: #000000;
+  --text: #ffffff;
+  --accent: #ff3b3b;
+  --muted: #bdbdbd;
+}
 
-    *{ box-sizing: border-box; }
-    html, body{ height:100%; margin:0; padding:0; }
+*{ box-sizing: border-box; }
+html, body{ height:100%; margin:0; padding:0; }
 
-    body{
-      font-family: Inter, system-ui, sans-serif;
-      color: var(--text);
-      display:flex;
-      flex-direction:column;
-      min-height:100vh;
+body{
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text);
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  background-image: url("background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center 0%;
+  background-color: black;
+}
 
-      /* background: image controlled by JS (background-position updated) */
-      background-image: url("background.png");
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center 0%;
-      background-color: black;
-    }
+/* HEADER + FOOTER glow */
+header, footer {
+  text-shadow: 0 0 6px rgba(255,255,255,0.55);
+}
 
-    header{
-      padding:1rem;
-      border-bottom:1px solid rgba(255,255,255,0.12);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      position:relative;
-      z-index:20;
-    }
+/* Header layout preserved from old version */
+header{
+  padding:1rem;
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:relative;
+  z-index:20;
+}
 
-    .brand img{
-      height:40px;
-      width:auto;
-      display:block;
-      user-select:none;
-    }
+.brand img{
+  height:40px;
+  width:auto;
+  display:block;
+  user-select:none;
+}
 
-    nav a{
-      text-decoration:none;
-      color:var(--muted);
-      margin-left:1rem;
-      font-size:0.95rem;
-    }
+nav a{
+  text-decoration:none;
+  color:var(--muted);
+  margin-left:1rem;
+  font-size:0.95rem;
+}
 
-    main{
-      flex:1;
-      padding:1.25rem;
-      max-width:1000px;
-      width:100%;
-      margin:0 auto;
-      z-index:5;
-    }
+/* GRID stays from old version */
+main{
+  flex:1;
+  padding:1.25rem;
+  max-width:1000px;
+  width:100%;
+  margin:0 auto;
+  z-index:5;
+}
 
-    /* GLASS CARDS — stronger blur, more transparent */
-    .card, .port-card{
-      border:1px solid rgba(255,255,255,0.12);
-      padding:1rem;
-      border-radius:10px;
-      backdrop-filter: blur(12px) saturate(120%);
-      -webkit-backdrop-filter: blur(12px) saturate(120%);
-      background: rgba(0,0,0,0.30); /* more transparent */
-      margin-bottom:1rem;
-      color:var(--text);
-      transition: background .18s ease, transform .12s ease;
-    }
+#portContainer{
+  margin-top:1.25rem;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+  gap:1rem;
+}
 
-    /* when a child title hovered we make the card slightly more opaque */
-    .port-card.title-hover {
-      background: rgba(0,0,0,0.45);
-      transform: translateY(-3px);
-    }
+/* -----------------------------
+   GLASS CARD (NEW)
+----------------------------- */
+.port-card{
+  border:1px solid rgba(255,255,255,0.12);
+  padding:1rem;
+  border-radius:12px;
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  background: rgba(0,0,0,0.32);
+  margin-bottom:1rem;
+  color:var(--text);
+  transition:
+    transform .28s cubic-bezier(.25,.9,.3,1.08),
+    background .22s ease,
+    box-shadow .28s ease;
+}
 
-    footer{
-      padding:0.75rem 1rem;
-      border-top:1px solid rgba(255,255,255,0.12);
-      text-align:center;
-      color:var(--muted);
-      background: rgba(0,0,0,0.30);
-      backdrop-filter: blur(10px);
-    }
+/* Hover GLOW (NEW) */
+.port-card-link:hover .port-card{
+  transform: scale(1.1);
+  background: rgba(0,0,0,0.40);
+  box-shadow: 0 0 22px rgba(255,255,255,0.12);
+}
 
-    /* SQUARE hamburger button */
-    .dashboard-btn{
-      background:none;
-      border:1px solid rgba(255,255,255,0.9);
-      padding:0.45rem;
-      width:42px;
-      height:42px;
-      border-radius:6px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      transition: background .12s ease;
-    }
-    .dashboard-btn:focus { outline:2px solid rgba(255,255,255,0.12); }
+/* Image smaller (new) */
+.port-card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:8px;
+  margin-bottom:0.5rem;
+}
 
-    .dashboard-btn:hover{ background: rgba(255,255,255,0.03); }
+/* Title hover color only */
+.port-card h2{
+  text-align:center;
+  margin:0;
+  padding:0.35rem 0 0;
+  font-size:1.05rem;
+  transition: color .16s ease;
+}
+.port-card h2:hover{
+  color: var(--accent);
+}
 
-    .dash-icon{
-      width:22px;
-      height:16px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      pointer-events:none;
-    }
+/* Anchor block */
+.port-card-link{
+  text-decoration:none;
+  color:var(--text);
+  display:block;
+}
 
-    .dash-icon div{
-      height:2.75px;
-      background:white; /* white icon requested */
-      border-radius:2px;
-    }
+/* Disable old scale-on-title-hover */
+.port-card.title-hover{
+  transform:none !important;
+}
 
-    /* Animated glass dropdown (class-based) */
-    .dashboard-panel{
-      position:absolute;
-      right:1rem;
-      top:65px;
-      background:rgba(0,0,0,0.36);
-      border:1px solid rgba(255,255,255,0.08);
-      padding:0.5rem;
-      border-radius:8px;
-      width:220px;
-      backdrop-filter: blur(12px);
-      transform-origin: top right;
-      opacity:0;
-      transform: translateY(-8px) scale(.985);
-      pointer-events:none;
-      transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
-      z-index:30;
-    }
+/* Small screen behavior (old) */
+@media (max-width:600px){
+  nav{ display:none; }
+  main{ padding:1rem; }
+  #portContainer{ grid-template-columns:1fr; }
+}
 
-    .dashboard-panel.open{
-      opacity:1;
-      transform: translateY(0) scale(1);
-      pointer-events:auto;
-    }
+/* -----------------------------
+   DASHBOARD (use new glass)
+----------------------------- */
+.dashboard-btn{
+  background:none;
+  border:1px solid rgba(255,255,255,0.9);
+  padding:0.45rem;
+  width:42px;
+  height:42px;
+  border-radius:6px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.dash-icon{
+  width:22px;
+  height:16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.dash-icon div{
+  height:2.75px;
+  background:white;
+  border-radius:2px;
+}
 
-    .dashboard-panel a{
-      display:block;
-      color:var(--text);
-      text-decoration:none;
-      padding:0.45rem 0.6rem;
-      border-radius:6px;
-      font-size:0.95rem;
-      transition: background .15s ease, color .15s ease, transform .12s ease;
-    }
+/* NEW glass panel */
+.dashboard-panel{
+  position:absolute;
+  right:1rem;
+  top:65px;
+  width:220px;
+  padding:0.6rem;
+  border-radius:8px;
+  background:rgba(0,0,0,0.38);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.12);
+  transform: translateY(-8px);
+  opacity:0;
+  pointer-events:none;
+  transition:
+    opacity .22s ease,
+    transform .22s cubic-bezier(.2,.9,.3,1);
+}
 
-    .dashboard-panel a:focus { outline:2px solid rgba(255,255,255,0.06); }
+.dashboard-panel.open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
 
-    .dashboard-panel a:hover{
-      background: rgba(255,255,255,0.12); /* less transparent */
-      color: var(--accent); /* red */
-      transform: translateX(6px);
-      font-weight:600;
-    }
+.dashboard-panel a{
+  display:block;
+  padding:0.45rem 0.6rem;
+  text-decoration:none;
+  color:var(--text);
+  border-radius:6px;
+  font-size:0.95rem;
+}
+.dashboard-panel a:hover{
+  background:rgba(255,255,255,0.12);
+  color:var(--accent);
+}
 
-    /* Grid */
-    #portContainer{
-      margin-top:1.25rem;
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
-      gap:1rem;
-    }
-
-    /* CLICKABLE anchor blocks */
-    .port-card-link{
-      display:block;
-      text-decoration:none;
-      color:var(--text);
-      outline: none;
-    }
-    .port-card-link:focus .port-card { box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
-
-    .port-card img{
-      width:100%;
-      border-radius:8px;
-      margin-bottom:0.5rem;
-      display:block;
-      object-fit:cover;
-      background: rgba(255,255,255,0.03);
-    }
-
-    .port-card h2{
-      text-align:center;
-      margin:0;
-      padding:0.35rem 0 0;
-      font-size:1.05rem;
-      transition: color .12s ease, transform .12s ease;
-      color:var(--text);
-    }
-
-    /* Title hover interaction (turn red, bigger) */
-    .port-card h2:hover{
-      color: var(--accent);
-      transform: scale(1.06);
-    }
-
-    /* pointer cursor on hover for anchors */
-    .port-card-link:hover { cursor:pointer; }
-
-    /* small responsive nicety */
-    @media (max-width:600px){
-      nav{ display:none; }
-      main{ padding:1rem; }
-      #portContainer{ grid-template-columns: 1fr; }
-    }
-  </style>
+/* -----------------------------
+   FOOTER (new)
+----------------------------- */
+footer{
+  text-align:center;
+  padding:1rem;
+}
+footer a{
+  color:white;
+  text-shadow:0 0 6px rgba(255,255,255,0.6);
+  margin:0 10px;
+  text-decoration:none;
+  font-size:0.95rem;
+}
+footer a:hover{
+  color:var(--accent);
+}
+</style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <img src="webgL.png" alt="Site Logo">
-    </div>
-
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
-    </nav>
-
-    <!-- White 3-dash hamburger (square) -->
-    <button id="dashBtn" class="dashboard-btn" aria-controls="dashPanel" aria-expanded="false" title="Open dashboard">
-      <span class="dash-icon" aria-hidden="true">
-        <div></div><div></div><div></div>
-      </span>
-    </button>
-  </header>
-
-  <div id="dashPanel" class="dashboard-panel" role="menu" aria-hidden="true">
-    <a href="#" role="menuitem">Settings</a>
-    <a href="#" role="menuitem">Account</a>
-    <a href="#" role="menuitem">Tools</a>
-    <a href="#" role="menuitem">Dev Options</a>
+<header>
+  <div class="brand">
+    <img src="webgL.png" alt="Site Logo">
   </div>
 
-  <main>
-    <section class="card">
-      <h1>Welcome to Web-Ported!</h1>
-      <p>webports downloaded from gn-math, credits to genizy &lt;3</p>
-    </section>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </nav>
 
-    <div id="portContainer" aria-live="polite"></div>
-  </main>
+  <button id="dashBtn" class="dashboard-btn" aria-controls="dashPanel" aria-expanded="false">
+    <span class="dash-icon">
+      <div></div><div></div><div></div>
+    </span>
+  </button>
+</header>
 
-  <footer>
-    © <span id="year"></span> My Site
-  </footer>
+<div id="dashPanel" class="dashboard-panel" role="menu">
+  <a href="#">Settings</a>
+  <a href="#">Account</a>
+  <a href="#">Tools</a>
+  <a href="#">Dev Options</a>
+</div>
 
-  <script>
-    // safe DOM-ready wrapper
-    (function () {
-      // set year
-      const yearEl = document.getElementById('year');
-      if (yearEl) yearEl.textContent = new Date().getFullYear();
+<main>
+  <section class="card">
+    <h1>Welcome to Web-Ported!</h1>
+    <p>webports downloaded from gn-math, credits to genizy &lt;3</p>
+  </section>
 
-      /* ---------------------------
-         Dropdown logic (robust)
-      ----------------------------*/
-      const dashBtn = document.getElementById('dashBtn');
-      const dashPanel = document.getElementById('dashPanel');
+  <div id="portContainer" aria-live="polite"></div>
+</main>
 
-      function openPanel() {
-        dashPanel.classList.add('open');
-        dashPanel.setAttribute('aria-hidden', 'false');
-        dashBtn.setAttribute('aria-expanded', 'true');
-      }
-      function closePanel() {
-        dashPanel.classList.remove('open');
-        dashPanel.setAttribute('aria-hidden', 'true');
-        dashBtn.setAttribute('aria-expanded', 'false');
-      }
-      function togglePanel() {
-        dashPanel.classList.contains('open') ? closePanel() : openPanel();
-      }
+<footer>
+  <a href="#">version: v0.1</a><br>
+  <a href="#">discord</a><br>
+  <a href="#">suggestions & bug fixes</a><br>
+  <a href="#">other projects</a><br>
+  © <span id="year"></span>
+</footer>
 
-      if (dashBtn && dashPanel) {
-        dashBtn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          togglePanel();
-        });
+<script>
+(function () {
 
-        // close when clicking outside
-        document.addEventListener('click', function (e) {
-          if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) {
-            closePanel();
-          }
-        });
+  /* YEAR */
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-        // keyboard: Escape closes
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') closePanel();
-        });
-      }
+  /* DASHBOARD logic (old) */
+  const dashBtn = document.getElementById('dashBtn');
+  const dashPanel = document.getElementById('dashPanel');
 
-      /* ---------------------------
-         Background scroll (resilient)
-         - slowFactor controls how much the background moves relative to page scroll
-         - clamp prevents image leaving the viewport
-      ----------------------------*/
-      function updateBackgroundScroll() {
-        try {
-          const scrollTop = window.scrollY || window.pageYOffset || 0;
-          const docHeight = Math.max(document.body.scrollHeight - window.innerHeight, 0);
+  function openPanel(){
+    dashPanel.classList.add('open');
+    dashBtn.setAttribute('aria-expanded','true');
+  }
+  function closePanel(){
+    dashPanel.classList.remove('open');
+    dashBtn.setAttribute('aria-expanded','false');
+  }
+  function togglePanel(){
+    dashPanel.classList.contains('open') ? closePanel() : openPanel();
+  }
 
-          // if page has no scroll, keep at top
-          let scrollPercent = docHeight > 0 ? (scrollTop / docHeight) : 0;
+  dashBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    togglePanel();
+  });
 
-          // slower movement factor (smaller = slower)
-          const slowFactor = 0.22;
+  document.addEventListener('click', e => {
+    if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)){
+      closePanel();
+    }
+  });
 
-          // compute limited percent and clamp between 0 and slowFactor
-          let mapped = Math.min(Math.max(scrollPercent * slowFactor, 0), slowFactor);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePanel();
+  });
 
-          // convert to percentage for background-position
-          const yPercent = mapped / slowFactor * (slowFactor * 100); // yields 0..(slowFactor*100)
-          // simpler: just use mapped*100
-          document.body.style.backgroundPosition = 'center ' + (mapped * 100) + '%';
-        } catch (err) {
-          // don't break page if something odd happens
-          console.error('bg scroll error', err);
-        }
-      }
+  /* BACKGROUND SCROLL (old) */
+  function updateBackgroundScroll(){
+    try{
+      const scrollTop = window.scrollY || 0;
+      const docHeight = Math.max(document.body.scrollHeight - window.innerHeight, 0);
+      let scrollPercent = docHeight > 0 ? (scrollTop / docHeight) : 0;
 
-      window.addEventListener('scroll', updateBackgroundScroll, { passive: true });
-      window.addEventListener('resize', updateBackgroundScroll);
-      // initial
-      updateBackgroundScroll();
+      const slowFactor = 0.22;
+      let mapped = Math.min(Math.max(scrollPercent * slowFactor, 0), slowFactor);
 
-      /* ---------------------------
-         Load ports.json and build cards
-      ----------------------------*/
-      const portContainer = document.getElementById('portContainer');
+      document.body.style.backgroundPosition = 'center ' + (mapped * 100) + '%';
+    }catch(err){
+      console.error(err);
+    }
+  }
+  window.addEventListener('scroll', updateBackgroundScroll, { passive:true });
+  window.addEventListener('resize', updateBackgroundScroll);
+  updateBackgroundScroll();
 
-      function makeCard(item) {
-        // wrapper anchor
-        const a = document.createElement('a');
-        a.className = 'port-card-link';
-        // guard empty link: if empty, link to '#' and don't open new tab
-        a.href = item.link && item.link.trim() ? item.link : '#';
-        if (item.link && item.link.trim()) a.target = '_blank';
-        a.rel = 'noopener noreferrer';
+  /* PORT LOADER (old) */
+  const portContainer = document.getElementById('portContainer');
 
-        const card = document.createElement('div');
-        card.className = 'port-card';
+  function makeCard(item){
+    const a = document.createElement('a');
+    a.className = 'port-card-link';
+    a.href = item.link?.trim() || '#';
+    if (item.link) a.target = '_blank';
+    a.rel = 'noopener noreferrer';
 
-        // image element (use provided image path)
-        const img = document.createElement('img');
-        img.src = item.image || 'icon.png';
-        img.alt = item.title || 'item';
-        img.loading = 'lazy';
+    const card = document.createElement('div');
+    card.className = 'port-card';
 
-        const h2 = document.createElement('h2');
-        h2.textContent = item.title || '';
+    const img = document.createElement('img');
+    img.src = item.image || 'icon.png';
+    img.alt = item.title || 'item';
+    img.loading = 'lazy';
 
-        // hover interactivity: when title hovered, make parent card more opaque
-        h2.addEventListener('mouseenter', () => card.classList.add('title-hover'));
-        h2.addEventListener('mouseleave', () => card.classList.remove('title-hover'));
+    const h2 = document.createElement('h2');
+    h2.textContent = item.title || '';
 
-        card.appendChild(img);
-        card.appendChild(h2);
-        a.appendChild(card);
+    h2.addEventListener('mouseenter', () => card.classList.add('title-hover'));
+    h2.addEventListener('mouseleave', () => card.classList.remove('title-hover'));
 
-        return a;
-      }
+    card.append(img, h2);
+    a.append(card);
+    return a;
+  }
 
-      // fetch with graceful fallback
-      (function loadPorts() {
-        if (!portContainer) return;
-        fetch('ports.json', { cache: 'no-store' })
-          .then(res => {
-            if (!res.ok) throw new Error('Network response was not ok');
-            return res.json();
-          })
-          .then(data => {
-            if (!Array.isArray(data)) throw new Error('ports.json is not an array');
-            // clear container
-            portContainer.innerHTML = '';
-            data.forEach(item => {
-              try {
-                const node = makeCard(item);
-                portContainer.appendChild(node);
-              } catch (err) {
-                console.error('card build error', err, item);
-              }
-            });
-          })
-          .catch(err => {
-            console.warn('Failed to load ports.json — showing placeholder:', err);
-            // fallback: show a friendly placeholder card
-            portContainer.innerHTML = `
-              <div class="card">
-                <strong>Could not load ports.json</strong>
-                <p>Check console for details. Place a valid <code>ports.json</code> file in the site root (array of {image,title,link}).</p>
-              </div>
-            `;
-          });
-      })();
+  fetch('ports.json',{cache:'no-store'})
+    .then(res => res.json())
+    .then(data => {
+      portContainer.innerHTML = '';
+      data.forEach(item => portContainer.appendChild(makeCard(item)));
+    })
+    .catch(() => {
+      portContainer.innerHTML = `
+      <div class="card">
+        <strong>Could not load ports.json</strong>
+        <p>Place a ports.json file in the site root.</p>
+      </div>`;
+    });
 
-    })();
-  </script>
+})();
+</script>
+
 </body>
 </html>

@@ -1,1 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple Template</title>
+  <meta name="description" content="A minimal HTML template to start from." />
 
+  <!-- Minimal styles -->
+  <style>
+    :root{
+      --bg: #ffffff;
+      --text:#111827;
+      --accent:#2563eb;
+      --muted:#6b7280;
+    }
+    [data-theme="dark"]{
+      --bg:#0b1220;
+      --text:#e6eef8;
+      --accent:#60a5fa;
+      --muted:#94a3b8;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.4;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+    }
+
+    header{
+      padding:1rem;
+      border-bottom:1px solid rgba(0,0,0,0.06);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+    }
+    .brand{font-weight:700; letter-spacing: -0.02em;}
+    nav a{
+      text-decoration:none;
+      color:var(--muted);
+      margin-left:1rem;
+      font-size:0.95rem;
+    }
+    main{
+      flex:1;
+      padding:1.25rem;
+      max-width:1000px;
+      width:100%;
+      margin:0 auto;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(0,0,0,0.01), transparent);
+      border:1px solid rgba(0,0,0,0.05);
+      padding:1rem;
+      border-radius:10px;
+      box-shadow: 0 4px 18px rgba(2,6,23,0.04);
+    }
+    footer{
+      padding:0.75rem 1rem;
+      font-size:0.9rem;
+      color:var(--muted);
+      border-top:1px solid rgba(0,0,0,0.04);
+      text-align:center;
+    }
+
+    /* small responsive nicety */
+    @media (max-width:600px){
+      nav{display:none}
+      header{gap:0.5rem}
+    }
+
+    /* small button */
+    .btn{
+      background:var(--accent);
+      color:white;
+      border:0;
+      padding:0.5rem 0.75rem;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">My Site</div>
+
+    <nav aria-label="Main navigation">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+
+    <div>
+      <button id="themeToggle" class="btn" aria-pressed="false">Toggle theme</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" aria-labelledby="welcome">
+      <h1 id="welcome">Welcome</h1>
+      <p>This is a simple, minimal HTML template — edit the content, add sections, or copy into your project.</p>
+
+      <h2>Quick example layout</h2>
+      <p>Use semantic containers: &lt;header&gt;, &lt;main&gt;, &lt;footer&gt;, &lt;article&gt;, &lt;section&gt; for better structure and accessibility.</p>
+
+      <pre style="background:#f7f7f9;padding:0.5rem;border-radius:6px;overflow:auto;font-size:0.9rem;">
+&lt;section class="card"&gt;
+  &lt;h2&gt;Feature&lt;/h2&gt;
+  &lt;p&gt;Short description.&lt;/p&gt;
+&lt;/section&gt;
+      </pre>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> My Site — built with a tiny template.
+  </footer>
+
+  <script>
+    // set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // simple theme toggle (persists in localStorage)
+    const btn = document.getElementById('themeToggle');
+    const root = document.documentElement;
+    const saved = localStorage.getItem('theme') || 'light';
+    if(saved === 'dark') root.setAttribute('data-theme','dark');
+
+    function toggleTheme(){
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      if(isDark){
+        root.removeAttribute('data-theme');
+        localStorage.setItem('theme','light');
+        btn.setAttribute('aria-pressed','false');
+      } else {
+        root.setAttribute('data-theme','dark');
+        localStorage.setItem('theme','dark');
+        btn.setAttribute('aria-pressed','true');
+      }
+    }
+
+    btn.addEventListener('click', toggleTheme);
+  </script>
+</body>
+</html>

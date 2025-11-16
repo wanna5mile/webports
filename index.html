@@ -27,9 +27,8 @@
       /* BACKGROUND IMAGE */
       background-image: url("background.png");
       background-repeat: no-repeat;
-      background-size: cover; /* fill full width */
-      background-position: 0 0; /* JS updates vertical position */
-      background-attachment: scroll; 
+      background-size: cover;
+      background-position: 0 0;
     }
 
     header{
@@ -38,6 +37,8 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
+      position:relative;
+      z-index:2;
     }
 
     /* Brand image */
@@ -62,12 +63,14 @@
       margin:0 auto;
     }
 
-    .card{
+    /* GLASS CARD */
+    .card, .port-card{
       border:1px solid rgba(255,0,0,0.3);
       padding:1rem;
       border-radius:10px;
-      backdrop-filter: blur(2px);
-      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      background: rgba(0,0,0,0.55);
+      margin-bottom:1rem;
     }
 
     footer{
@@ -79,17 +82,33 @@
       backdrop-filter: blur(2px);
     }
 
-    /* Dashboard dropdown */
+    /* Hamburger dashboard button */
     .dashboard-btn{
       background:none;
       border:1px solid red;
-      padding:0.5rem 0.75rem;
+      padding:0.4rem 0.6rem;
       border-radius:8px;
-      color:red;
       cursor:pointer;
-      font-weight:600;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
+    .dashboard-btn .dash-icon{
+      width:22px;
+      height:14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .dashboard-btn .dash-icon div{
+      height:3px;
+      background:red;
+      border-radius:3px;
+    }
+
+    /* Dropdown */
     .dashboard-panel{
       position:absolute;
       right:1rem;
@@ -100,6 +119,7 @@
       border-radius:10px;
       width:200px;
       display:none;
+      z-index:10;
     }
 
     .dashboard-panel a{
@@ -107,6 +127,26 @@
       color:red;
       text-decoration:none;
       padding:0.3rem 0;
+    }
+
+    /* Portfolio grid */
+    #portContainer{
+      margin-top:1.5rem;
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+      gap:1rem;
+    }
+
+    .port-card img{
+      width:100%;
+      border-radius:8px;
+      margin-bottom:0.5rem;
+    }
+
+    .port-card a{
+      color:red;
+      text-decoration:none;
+      font-weight:600;
     }
   </style>
 </head>
@@ -123,7 +163,14 @@
       <a href="#">Contact</a>
     </nav>
 
-    <button id="dashBtn" class="dashboard-btn">Dashboard</button>
+    <!-- 3-dash icon button -->
+    <button id="dashBtn" class="dashboard-btn">
+      <div class="dash-icon">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </button>
   </header>
 
   <div id="dashPanel" class="dashboard-panel">
@@ -134,10 +181,15 @@
   </div>
 
   <main>
+
     <section class="card">
       <h1>Welcome</h1>
-      <p>This version includes a full scroll-mapped background image.</p>
+      <p>This version includes auto-generated glass cards from ports.json.</p>
     </section>
+
+    <!-- Where JSON cards generate -->
+    <div id="portContainer"></div>
+
   </main>
 
   <footer>
@@ -164,11 +216,7 @@
 
     /* ============================================================
        SCROLL-MAPPED BACKGROUND POSITION
-       ------------------------------------------------------------
-       - Maps scroll progress (0% → 100%) to background image Y shift
-       - Prevents showing past image top or bottom
     ============================================================ */
-
     function updateBackgroundScroll(){
       const scrollTop = window.scrollY;
       const docHeight = document.body.scrollHeight - window.innerHeight;
@@ -176,18 +224,40 @@
       let scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
       scrollPercent = Math.min(Math.max(scrollPercent, 0), 1);
 
-      /* Background moves down only within its safe range */
-      const maxOffset = 100; // percent bottom limit
-
-      const yPos = scrollPercent * maxOffset;
-
+      const yPos = scrollPercent * 100;
       document.body.style.backgroundPosition = `center ${yPos}%`;
     }
 
     window.addEventListener("scroll", updateBackgroundScroll);
     window.addEventListener("resize", updateBackgroundScroll);
-
     updateBackgroundScroll();
+
+    /* ============================================================
+       LOAD PORT CARDS FROM ports.json
+    ============================================================ */
+
+    const portContainer = document.getElementById("portContainer");
+
+    fetch("ports.json")
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "port-card";
+
+          card.innerHTML = `
+            <img src="${item.image}" alt="${item.title}">
+            <h2>${item.title}</h2>
+            <a href="${item.link}" target="_blank">Visit</a>
+          `;
+
+          portContainer.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("Failed to load ports.json:", err);
+      });
+
   </script>
 
 </body>

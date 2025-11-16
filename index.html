@@ -11,6 +11,7 @@
       --text: #ffffff;
       --accent: #ffffff;
       --muted: #bbbbbb;
+      --hover-red: #ff3b3b;
     }
 
     *{ box-sizing: border-box; }
@@ -30,58 +31,28 @@
       background-position: center 0%;
     }
 
-    header{
-      padding:1rem;
-      border-bottom:1px solid rgba(255,255,255,0.25);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      position:relative;
-      z-index:2;
-    }
-
-    .brand img{
-      height:40px;
-      width:auto;
-      display:block;
-    }
-
-    nav a{
-      text-decoration:none;
-      color:var(--muted);
-      margin-left:1rem;
-      font-size:0.95rem;
-    }
-
-    main{
-      flex:1;
-      padding:1.25rem;
-      max-width:1000px;
-      width:100%;
-      margin:0 auto;
-    }
-
-    /* GLASS CARDS */
+    /* GLASS CARDS — MORE GLASS, MORE BLUR */
     .card, .port-card{
       border:1px solid rgba(255,255,255,0.25);
       padding:1rem;
       border-radius:10px;
-      backdrop-filter: blur(4px);
-      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(12px);
+      background: rgba(0,0,0,0.35); /* MORE transparent */
       margin-bottom:1rem;
       color:white;
     }
 
+    /* GLASSY FOOTER */
     footer{
       padding:0.75rem 1rem;
       border-top:1px solid rgba(255,255,255,0.25);
       text-align:center;
       color:var(--muted);
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(2px);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
     }
 
-    /* SQUARE hamburger button */
+    /* Hamburger Button */
     .dashboard-btn{
       background:none;
       border:1px solid white;
@@ -93,69 +64,54 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      transition:0.2s ease;
+    }
+    .dashboard-btn:hover{
+      background:rgba(255,255,255,0.1);
     }
 
-    .dashboard-btn .dash-icon{
-      width:22px;
-      height:16px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-    }
-
-    .dashboard-btn .dash-icon div{
-      height:3px;
-      background:white;
-      border-radius:2px;
-    }
-
-    /* SQUARE dropdown */
+    /* ▼ ANIMATED GLASS DROPDOWN (INTERACTIVE) */
     .dashboard-panel{
       position:absolute;
       right:1rem;
       top:65px;
-      background:black;
-      border:1px solid white;
-      padding:1rem;
+      background:rgba(0,0,0,0.45); /* glassy */
+      border:1px solid rgba(255,255,255,0.25);
+      padding:0.5rem;
       border-radius:6px;
-      width:200px;
-      display:none;
+      width:210px;
+      backdrop-filter: blur(12px);
+
+      opacity:0;
+      transform: translateY(-8px);
+      pointer-events:none;
+
+      transition: opacity .25s ease, transform .25s ease;
       z-index:10;
     }
 
+    .dashboard-panel.open{
+      opacity:1;
+      transform: translateY(0);
+      pointer-events:auto;
+    }
+
+    /* ▼ MENU HOVER EFFECTS */
     .dashboard-panel a{
       display:block;
       color:white;
       text-decoration:none;
-      padding:0.3rem 0;
+      padding:0.35rem 0.5rem;
+      border-radius:6px;
+      font-size:0.95rem;
+      transition:0.18s ease;
     }
 
-    /* Grid */
-    #portContainer{
-      margin-top:1.5rem;
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
-      gap:1rem;
-    }
-
-    /* CLICKABLE anchor blocks */
-    .port-card-link{
-      display:block;
-      text-decoration:none;
-      color:white;
-    }
-
-    .port-card img{
-      width:100%;
-      border-radius:8px;
-      margin-bottom:0.5rem;
-    }
-
-    .port-card h2{
-      text-align:center;
-      margin:0;
-      padding-bottom:0.5rem;
-      font-size:1.1rem;
+    .dashboard-panel a:hover{
+      background:rgba(255,255,255,0.25); /* less transparent */
+      color:var(--hover-red);
+      font-size:1.05rem;
+      transform:translateX(4px);
     }
   </style>
 </head>
@@ -172,7 +128,6 @@
       <a href="#">Contact</a>
     </nav>
 
-    <!-- White 3-dash hamburger -->
     <button id="dashBtn" class="dashboard-btn">
       <div class="dash-icon">
         <div></div>
@@ -207,34 +162,28 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Dashboard dropdown
+    /* INTERACTIVE DROPDOWN */
     const dashBtn = document.getElementById("dashBtn");
     const dashPanel = document.getElementById("dashPanel");
 
     dashBtn.addEventListener("click", () => {
-      dashPanel.style.display =
-        dashPanel.style.display === "block" ? "none" : "block";
+      dashPanel.classList.toggle("open");
     });
 
     document.addEventListener("click", (e) => {
       if(!dashPanel.contains(e.target) && !dashBtn.contains(e.target)){
-        dashPanel.style.display = "none";
+        dashPanel.classList.remove("open");
       }
     });
 
-    /* ============================================================
-       Slow background scroll that NEVER leaves the image
-    ============================================================ */
+    /* BACKGROUND SCROLL (unchanged) */
     function updateBackgroundScroll(){
       const scrollTop = window.scrollY;
       const docHeight = document.body.scrollHeight - window.innerHeight;
 
       let scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
 
-      // Slow factor — change 0.25 to slower/faster
       scrollPercent = scrollPercent * 0.25;
-
-      // HARD clamp so image never scrolls off screen
       scrollPercent = Math.min(Math.max(scrollPercent, 0), 0.25);
 
       const yPos = scrollPercent * 100;
@@ -245,9 +194,7 @@
     window.addEventListener("resize", updateBackgroundScroll);
     updateBackgroundScroll();
 
-    /* ============================================================
-       LOAD PORT CARDS
-    ============================================================ */
+    /* PORT LOAD (unchanged) */
     const portContainer = document.getElementById("portContainer");
 
     fetch("ports.json")
@@ -255,7 +202,6 @@
       .then(data => {
         data.forEach(item => {
 
-          // Whole block is now a clickable <a>
           const wrapper = document.createElement("a");
           wrapper.href = item.link;
           wrapper.target = "_blank";

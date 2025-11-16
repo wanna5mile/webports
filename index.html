@@ -70,7 +70,7 @@
       z-index:5;
     }
 
-    /* CARDS */
+    /* PORT CARDS */
     .port-card{
       border:1px solid rgba(255,255,255,0.12);
       padding:1rem;
@@ -130,7 +130,86 @@
       transform:none;
     }
 
+    /* DASHBOARD PANEL */
+    .dashboard-btn{
+      background:none;
+      padding:0.45rem;
+      width:42px;
+      height:42px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:none !important;
+      outline:none !important;
+      box-shadow:none !important;
+    }
+
+    .dash-icon{
+      width:22px;
+      height:16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      pointer-events:none;
+    }
+
+    .dash-icon div{
+      height:2.75px;
+      background:white;
+      border-radius:2px;
+    }
+
+    .dashboard-panel{
+      position:absolute;
+      right:1rem;
+      top:65px;
+      background:rgba(0,0,0,0.36);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:0.5rem;
+      border-radius:8px;
+      width:220px;
+      backdrop-filter: blur(12px);
+      transform-origin: top right;
+      opacity:0;
+      transform: translateY(-8px) scale(.985);
+      pointer-events:none;
+      transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
+      z-index:30;
+    }
+
+    .dashboard-panel.open{
+      opacity:1;
+      transform: translateY(0) scale(1);
+      pointer-events:auto;
+    }
+
+    .dashboard-panel a{
+      display:block;
+      color:var(--text);
+      text-decoration:none;
+      padding:0.45rem 0.6rem;
+      border-radius:6px;
+      font-size:0.95rem;
+      transition: background .15s ease, color .15s ease, transform .12s ease;
+    }
+
+    .dashboard-panel a:focus { outline:2px solid rgba(255,255,255,0.06); }
+
+    .dashboard-panel a:hover{
+      background: rgba(255,255,255,0.12);
+      color: var(--accent);
+      transform: translateX(6px);
+      font-weight:600;
+    }
+
     /* Footer */
+    hr{
+      border:0;
+      border-top:1px solid rgba(255,255,255,0.12);
+      margin:1rem 0;
+    }
+
     footer{
       padding:1rem;
       display:flex;
@@ -139,12 +218,6 @@
       gap:1rem;
       text-align:center;
       backdrop-filter:none;
-    }
-
-    hr{
-      border:0;
-      border-top:1px solid rgba(255,255,255,0.12);
-      margin:1rem 0;
     }
 
     footer a{

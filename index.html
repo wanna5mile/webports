@@ -70,92 +70,19 @@
       z-index:5;
     }
 
-    /* GLASS CARDS */
-    .card, .port-card{
+    /* CARDS */
+    .port-card{
       border:1px solid rgba(255,255,255,0.12);
       padding:1rem;
-      border-radius:10px; /* changed from 20px */
-      background: rgba(0,0,0,0.30);
+      border-radius:10px;
       margin-bottom:1rem;
       color:var(--text);
       transition: transform .22s ease, box-shadow .22s ease;
       display:flex;
       flex-direction:column;
       align-items:center;
-      width:fit-content; /* size based on content */
-    }
-
-    /* SQUARE hamburger button */
-    .dashboard-btn{
-      background:none;
-      padding:0.45rem;
-      width:42px;
-      height:42px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border:none !important;
-      outline:none !important;
-      box-shadow:none !important;
-    }
-
-    .dash-icon{
-      width:22px;
-      height:16px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      pointer-events:none;
-    }
-
-    .dash-icon div{
-      height:2.75px;
-      background:white;
-      border-radius:2px;
-    }
-
-    .dashboard-panel{
-      position:absolute;
-      right:1rem;
-      top:65px;
-      background:rgba(0,0,0,0.36);
-      border:1px solid rgba(255,255,255,0.08);
-      padding:0.5rem;
-      border-radius:8px;
-      width:220px;
-      backdrop-filter: blur(12px);
-      transform-origin: top right;
-      opacity:0;
-      transform: translateY(-8px) scale(.985);
-      pointer-events:none;
-      transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
-      z-index:30;
-    }
-
-    .dashboard-panel.open{
-      opacity:1;
-      transform: translateY(0) scale(1);
-      pointer-events:auto;
-    }
-
-    .dashboard-panel a{
-      display:block;
-      color:var(--text);
-      text-decoration:none;
-      padding:0.45rem 0.6rem;
-      border-radius:6px;
-      font-size:0.95rem;
-      transition: background .15s ease, color .15s ease, transform .12s ease;
-    }
-
-    .dashboard-panel a:focus { outline:2px solid rgba(255,255,255,0.06); }
-
-    .dashboard-panel a:hover{
-      background: rgba(255,255,255,0.12);
-      color: var(--accent);
-      transform: translateX(6px);
-      font-weight:600;
+      width:fit-content;
+      background: none; /* removed background */
     }
 
     /* Grid */
@@ -182,12 +109,11 @@
     }
 
     .port-card img{
-      width:200px; /* updated */
-      border-radius:10px;
+      width:200px;
+      border-radius:15px; /* updated */
       margin-bottom:0.5rem;
       display:block;
       object-fit:cover;
-      background: rgba(255,255,255,0.03);
     }
 
     .port-card h2{
@@ -213,6 +139,12 @@
       gap:1rem;
       text-align:center;
       backdrop-filter:none;
+    }
+
+    hr{
+      border:0;
+      border-top:1px solid rgba(255,255,255,0.12);
+      margin:1rem 0;
     }
 
     footer a{
@@ -267,21 +199,17 @@
   </div>
 
   <main>
-    <section class="card">
-      <h1>Welcome to Web-Ported!</h1>
-      <p>webports downloaded from gn-math, credits to genizy &lt;3</p>
-    </section>
-
     <div id="portContainer" aria-live="polite"></div>
   </main>
 
-<footer>
-  <a href="#">version: v0.1</a>
-  <a href="#">discord</a>
-  <a href="#">suggestions & bug fixes</a>
-  <a href="#">other projects</a>
-  © <span id="year"></span>
-</footer>
+  <hr>
+  <footer>
+    <a href="#">version: v0.1</a>
+    <a href="#">discord</a>
+    <a href="#">suggestions & bug fixes</a>
+    <a href="#">other projects</a>
+    © <span id="year"></span>
+  </footer>
 
 <script>
 (function () {
@@ -369,7 +297,7 @@
       .catch(err=>{
         console.warn('Failed to load ports.json — showing placeholder:',err);
         portContainer.innerHTML=`
-          <div class="card">
+          <div class="port-card">
             <strong>Could not load ports.json</strong>
             <p>Check console for details. Place a valid <code>ports.json</code> file in the site root (array of {image,title,link}).</p>
           </div>

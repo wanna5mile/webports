@@ -4,31 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Simple Template</title>
-  <meta name="description" content="A minimal HTML template to start from." />
 
-  <!-- Minimal styles -->
   <style>
     :root{
-      --bg: #ffffff;
-      --text:#111827;
-      --accent:#2563eb;
-      --muted:#6b7280;
-    }
-    [data-theme="dark"]{
-      --bg:#0b1220;
-      --text:#e6eef8;
-      --accent:#60a5fa;
-      --muted:#94a3b8;
+      --bg: #000000;
+      --text: #ff0000;
+      --accent: #ff0000;
+      --muted: #aa0000;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{ box-sizing: border-box; }
+    html, body{ height:100%; }
+
     body{
       margin:0;
-      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background:var(--bg);
-      color:var(--text);
-      line-height:1.4;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       display:flex;
       flex-direction:column;
       min-height:100vh;
@@ -36,19 +28,26 @@
 
     header{
       padding:1rem;
-      border-bottom:1px solid rgba(0,0,0,0.06);
+      border-bottom:1px solid rgba(255,0,0,0.3);
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:1rem;
     }
-    .brand{font-weight:700; letter-spacing: -0.02em;}
+
+    /* Brand image */
+    .brand img{
+      height:40px;
+      width:auto;
+      display:block;
+    }
+
     nav a{
       text-decoration:none;
       color:var(--muted);
       margin-left:1rem;
       font-size:0.95rem;
     }
+
     main{
       flex:1;
       padding:1.25rem;
@@ -56,101 +55,103 @@
       width:100%;
       margin:0 auto;
     }
+
     .card{
-      background:linear-gradient(180deg, rgba(0,0,0,0.01), transparent);
-      border:1px solid rgba(0,0,0,0.05);
+      border:1px solid rgba(255,0,0,0.3);
       padding:1rem;
       border-radius:10px;
-      box-shadow: 0 4px 18px rgba(2,6,23,0.04);
     }
+
     footer{
       padding:0.75rem 1rem;
-      font-size:0.9rem;
-      color:var(--muted);
-      border-top:1px solid rgba(0,0,0,0.04);
+      border-top:1px solid rgba(255,0,0,0.3);
       text-align:center;
+      color:var(--muted);
     }
 
-    /* small responsive nicety */
-    @media (max-width:600px){
-      nav{display:none}
-      header{gap:0.5rem}
-    }
-
-    /* small button */
-    .btn{
-      background:var(--accent);
-      color:white;
-      border:0;
+    /* Dashboard dropdown */
+    .dashboard-btn{
+      background:none;
+      border:1px solid red;
       padding:0.5rem 0.75rem;
       border-radius:8px;
+      color:red;
       cursor:pointer;
       font-weight:600;
-      font-size:0.95rem;
+    }
+
+    .dashboard-panel{
+      position:absolute;
+      right:1rem;
+      top:65px;
+      background:black;
+      border:1px solid red;
+      padding:1rem;
+      border-radius:10px;
+      width:200px;
+      display:none;
+    }
+
+    .dashboard-panel a{
+      display:block;
+      color:red;
+      text-decoration:none;
+      padding:0.3rem 0;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="brand">My Site</div>
+    <div class="brand">
+      <img src="webgl.png" alt="Site Logo">
+    </div>
 
-    <nav aria-label="Main navigation">
+    <nav>
       <a href="#">Home</a>
       <a href="#">About</a>
       <a href="#">Contact</a>
     </nav>
 
-    <div>
-      <button id="themeToggle" class="btn" aria-pressed="false">Toggle theme</button>
-    </div>
+    <button id="dashBtn" class="dashboard-btn">Dashboard</button>
   </header>
 
+  <div id="dashPanel" class="dashboard-panel">
+    <a href="#">Settings</a>
+    <a href="#">Account</a>
+    <a href="#">Tools</a>
+    <a href="#">Dev Options</a>
+  </div>
+
   <main>
-    <section class="card" aria-labelledby="welcome">
-      <h1 id="welcome">Welcome</h1>
-      <p>This is a simple, minimal HTML template — edit the content, add sections, or copy into your project.</p>
-
-      <h2>Quick example layout</h2>
-      <p>Use semantic containers: &lt;header&gt;, &lt;main&gt;, &lt;footer&gt;, &lt;article&gt;, &lt;section&gt; for better structure and accessibility.</p>
-
-      <pre style="background:#f7f7f9;padding:0.5rem;border-radius:6px;overflow:auto;font-size:0.9rem;">
-&lt;section class="card"&gt;
-  &lt;h2&gt;Feature&lt;/h2&gt;
-  &lt;p&gt;Short description.&lt;/p&gt;
-&lt;/section&gt;
-      </pre>
+    <section class="card">
+      <h1>Welcome</h1>
+      <p>This version uses a fully black background and red text everywhere.</p>
     </section>
   </main>
 
   <footer>
-    © <span id="year"></span> My Site — built with a tiny template.
+    © <span id="year"></span> My Site
   </footer>
 
   <script>
-    // set current year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // simple theme toggle (persists in localStorage)
-    const btn = document.getElementById('themeToggle');
-    const root = document.documentElement;
-    const saved = localStorage.getItem('theme') || 'light';
-    if(saved === 'dark') root.setAttribute('data-theme','dark');
+    // Dashboard dropdown toggle
+    const dashBtn = document.getElementById("dashBtn");
+    const dashPanel = document.getElementById("dashPanel");
 
-    function toggleTheme(){
-      const isDark = root.getAttribute('data-theme') === 'dark';
-      if(isDark){
-        root.removeAttribute('data-theme');
-        localStorage.setItem('theme','light');
-        btn.setAttribute('aria-pressed','false');
-      } else {
-        root.setAttribute('data-theme','dark');
-        localStorage.setItem('theme','dark');
-        btn.setAttribute('aria-pressed','true');
+    dashBtn.addEventListener("click", () => {
+      dashPanel.style.display = dashPanel.style.display === "block" ? "none" : "block";
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if(!dashPanel.contains(e.target) && !dashBtn.contains(e.target)){
+        dashPanel.style.display = "none";
       }
-    }
-
-    btn.addEventListener('click', toggleTheme);
+    });
   </script>
+
 </body>
 </html>

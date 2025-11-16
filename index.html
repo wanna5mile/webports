@@ -19,11 +19,17 @@
     body{
       margin:0;
       font-family: Inter, system-ui, sans-serif;
-      background: var(--bg);
       color: var(--text);
       display:flex;
       flex-direction:column;
       min-height:100vh;
+
+      /* BACKGROUND IMAGE */
+      background-image: url("background.png");
+      background-repeat: no-repeat;
+      background-size: cover; /* fill full width */
+      background-position: 0 0; /* JS updates vertical position */
+      background-attachment: scroll; 
     }
 
     header{
@@ -60,6 +66,8 @@
       border:1px solid rgba(255,0,0,0.3);
       padding:1rem;
       border-radius:10px;
+      backdrop-filter: blur(2px);
+      background: rgba(0,0,0,0.5);
     }
 
     footer{
@@ -67,6 +75,8 @@
       border-top:1px solid rgba(255,0,0,0.3);
       text-align:center;
       color:var(--muted);
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(2px);
     }
 
     /* Dashboard dropdown */
@@ -126,7 +136,7 @@
   <main>
     <section class="card">
       <h1>Welcome</h1>
-      <p>This version uses a fully black background and red text everywhere.</p>
+      <p>This version includes a full scroll-mapped background image.</p>
     </section>
   </main>
 
@@ -142,15 +152,42 @@
     const dashPanel = document.getElementById("dashPanel");
 
     dashBtn.addEventListener("click", () => {
-      dashPanel.style.display = dashPanel.style.display === "block" ? "none" : "block";
+      dashPanel.style.display =
+        dashPanel.style.display === "block" ? "none" : "block";
     });
 
-    // Close dropdown when clicking outside
     document.addEventListener("click", (e) => {
       if(!dashPanel.contains(e.target) && !dashBtn.contains(e.target)){
         dashPanel.style.display = "none";
       }
     });
+
+    /* ============================================================
+       SCROLL-MAPPED BACKGROUND POSITION
+       ------------------------------------------------------------
+       - Maps scroll progress (0% → 100%) to background image Y shift
+       - Prevents showing past image top or bottom
+    ============================================================ */
+
+    function updateBackgroundScroll(){
+      const scrollTop = window.scrollY;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+
+      let scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
+      scrollPercent = Math.min(Math.max(scrollPercent, 0), 1);
+
+      /* Background moves down only within its safe range */
+      const maxOffset = 100; // percent bottom limit
+
+      const yPos = scrollPercent * maxOffset;
+
+      document.body.style.backgroundPosition = `center ${yPos}%`;
+    }
+
+    window.addEventListener("scroll", updateBackgroundScroll);
+    window.addEventListener("resize", updateBackgroundScroll);
+
+    updateBackgroundScroll();
   </script>
 
 </body>

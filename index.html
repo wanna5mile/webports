@@ -64,7 +64,7 @@
     main{
       flex:1;
       padding:1.25rem;
-      max-width:1000px;
+      max-width:1200px;
       width:100%;
       margin:0 auto;
       z-index:5;
@@ -74,13 +74,15 @@
     .card, .port-card{
       border:1px solid rgba(255,255,255,0.12);
       padding:1rem;
-      border-radius:20px;
-      backdrop-filter: blur(12px) saturate(120%);
-      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      border-radius:10px; /* changed from 20px */
       background: rgba(0,0,0,0.30);
       margin-bottom:1rem;
       color:var(--text);
       transition: transform .22s ease, box-shadow .22s ease;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      width:fit-content; /* size based on content */
     }
 
     /* SQUARE hamburger button */
@@ -160,11 +162,11 @@
     #portContainer{
       margin-top:1.25rem;
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap:1rem;
+      justify-content:center;
     }
 
-    /* CLICKABLE anchor blocks */
     .port-card-link{
       display:block;
       text-decoration:none;
@@ -180,9 +182,9 @@
     }
 
     .port-card img{
-      width:150px;
-      border-radius:20px;
-      margin:0 auto 0.5rem auto;
+      width:200px; /* updated */
+      border-radius:10px;
+      margin-bottom:0.5rem;
       display:block;
       object-fit:cover;
       background: rgba(255,255,255,0.03);
@@ -206,15 +208,15 @@
     footer{
       padding:1rem;
       display:flex;
-      flex-direction:column;
-      gap:6px;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:1rem;
       text-align:center;
-      backdrop-filter: blur(10px);
+      backdrop-filter:none;
     }
 
     footer a{
       color:white;
-      display:block;
       text-decoration:none;
       transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
     }
@@ -223,6 +225,11 @@
       color: var(--accent);
       transform: scale(1.12);
       text-shadow: 0 0 8px rgba(255,0,0,0.55);
+    }
+
+    footer span{
+      display:block;
+      margin-top:4px;
     }
 
     @media (max-width:600px){

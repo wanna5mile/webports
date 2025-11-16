@@ -8,9 +8,9 @@
   <style>
     :root{
       --bg: #000000;
-      --text: #ff0000;
-      --accent: #ff0000;
-      --muted: #aa0000;
+      --text: #ffffff;
+      --accent: #ffffff;
+      --muted: #bbbbbb;
     }
 
     *{ box-sizing: border-box; }
@@ -24,16 +24,15 @@
       flex-direction:column;
       min-height:100vh;
 
-      /* BACKGROUND IMAGE */
       background-image: url("background.png");
       background-repeat: no-repeat;
       background-size: cover;
-      background-position: 0 0;
+      background-position: center 0%;
     }
 
     header{
       padding:1rem;
-      border-bottom:1px solid rgba(255,0,0,0.3);
+      border-bottom:1px solid rgba(255,255,255,0.25);
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -41,7 +40,6 @@
       z-index:2;
     }
 
-    /* Brand image */
     .brand img{
       height:40px;
       width:auto;
@@ -63,31 +61,34 @@
       margin:0 auto;
     }
 
-    /* GLASS CARD */
+    /* GLASS CARDS */
     .card, .port-card{
-      border:1px solid rgba(255,0,0,0.3);
+      border:1px solid rgba(255,255,255,0.25);
       padding:1rem;
       border-radius:10px;
       backdrop-filter: blur(4px);
       background: rgba(0,0,0,0.55);
       margin-bottom:1rem;
+      color:white;
     }
 
     footer{
       padding:0.75rem 1rem;
-      border-top:1px solid rgba(255,0,0,0.3);
+      border-top:1px solid rgba(255,255,255,0.25);
       text-align:center;
       color:var(--muted);
       background: rgba(0,0,0,0.5);
       backdrop-filter: blur(2px);
     }
 
-    /* Hamburger dashboard button */
+    /* SQUARE hamburger button */
     .dashboard-btn{
       background:none;
-      border:1px solid red;
-      padding:0.4rem 0.6rem;
-      border-radius:8px;
+      border:1px solid white;
+      padding:0.6rem;
+      width:42px;
+      height:42px;
+      border-radius:6px;
       cursor:pointer;
       display:flex;
       align-items:center;
@@ -96,7 +97,7 @@
 
     .dashboard-btn .dash-icon{
       width:22px;
-      height:14px;
+      height:16px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
@@ -104,19 +105,19 @@
 
     .dashboard-btn .dash-icon div{
       height:3px;
-      background:red;
-      border-radius:3px;
+      background:white;
+      border-radius:2px;
     }
 
-    /* Dropdown */
+    /* SQUARE dropdown */
     .dashboard-panel{
       position:absolute;
       right:1rem;
       top:65px;
       background:black;
-      border:1px solid red;
+      border:1px solid white;
       padding:1rem;
-      border-radius:10px;
+      border-radius:6px;
       width:200px;
       display:none;
       z-index:10;
@@ -124,17 +125,24 @@
 
     .dashboard-panel a{
       display:block;
-      color:red;
+      color:white;
       text-decoration:none;
       padding:0.3rem 0;
     }
 
-    /* Portfolio grid */
+    /* Grid */
     #portContainer{
       margin-top:1.5rem;
       display:grid;
       grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
       gap:1rem;
+    }
+
+    /* CLICKABLE anchor blocks */
+    .port-card-link{
+      display:block;
+      text-decoration:none;
+      color:white;
     }
 
     .port-card img{
@@ -143,10 +151,11 @@
       margin-bottom:0.5rem;
     }
 
-    .port-card a{
-      color:red;
-      text-decoration:none;
-      font-weight:600;
+    .port-card h2{
+      text-align:center;
+      margin:0;
+      padding-bottom:0.5rem;
+      font-size:1.1rem;
     }
   </style>
 </head>
@@ -163,7 +172,7 @@
       <a href="#">Contact</a>
     </nav>
 
-    <!-- 3-dash icon button -->
+    <!-- White 3-dash hamburger -->
     <button id="dashBtn" class="dashboard-btn">
       <div class="dash-icon">
         <div></div>
@@ -183,11 +192,10 @@
   <main>
 
     <section class="card">
-      <h1>Welcome</h1>
-      <p>This version includes auto-generated glass cards from ports.json.</p>
+      <h1>Welcome to Web-Ported!</h1>
+      <p>webports downloaded from gn-math, credits to genizy <3 </p>
     </section>
 
-    <!-- Where JSON cards generate -->
     <div id="portContainer"></div>
 
   </main>
@@ -199,7 +207,7 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Dashboard dropdown toggle
+    // Dashboard dropdown
     const dashBtn = document.getElementById("dashBtn");
     const dashPanel = document.getElementById("dashPanel");
 
@@ -215,14 +223,19 @@
     });
 
     /* ============================================================
-       SCROLL-MAPPED BACKGROUND POSITION
+       Slow background scroll that NEVER leaves the image
     ============================================================ */
     function updateBackgroundScroll(){
       const scrollTop = window.scrollY;
       const docHeight = document.body.scrollHeight - window.innerHeight;
 
       let scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
-      scrollPercent = Math.min(Math.max(scrollPercent, 0), 1);
+
+      // Slow factor — change 0.25 to slower/faster
+      scrollPercent = scrollPercent * 0.25;
+
+      // HARD clamp so image never scrolls off screen
+      scrollPercent = Math.min(Math.max(scrollPercent, 0), 0.25);
 
       const yPos = scrollPercent * 100;
       document.body.style.backgroundPosition = `center ${yPos}%`;
@@ -233,31 +246,34 @@
     updateBackgroundScroll();
 
     /* ============================================================
-       LOAD PORT CARDS FROM ports.json
+       LOAD PORT CARDS
     ============================================================ */
-
     const portContainer = document.getElementById("portContainer");
 
     fetch("ports.json")
       .then(res => res.json())
       .then(data => {
         data.forEach(item => {
+
+          // Whole block is now a clickable <a>
+          const wrapper = document.createElement("a");
+          wrapper.href = item.link;
+          wrapper.target = "_blank";
+          wrapper.className = "port-card-link";
+
           const card = document.createElement("div");
           card.className = "port-card";
 
           card.innerHTML = `
             <img src="${item.image}" alt="${item.title}">
             <h2>${item.title}</h2>
-            <a href="${item.link}" target="_blank">Visit</a>
           `;
 
-          portContainer.appendChild(card);
+          wrapper.appendChild(card);
+          portContainer.appendChild(wrapper);
         });
       })
-      .catch(err => {
-        console.error("Failed to load ports.json:", err);
-      });
-
+      .catch(err => console.error("Failed to load ports.json:", err));
   </script>
 
 </body>

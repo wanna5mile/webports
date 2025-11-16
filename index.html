@@ -3,60 +3,100 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Web-Ported - WebGL Ports</title>
+  <title>Web-Ported - WebGL ports</title>
 
   <style>
     :root{
       --bg: #000000;
       --text: #ffffff;
-      --accent: #ffffff;
-      --muted: #bbbbbb;
-      --hover-red: #ff3b3b;
+      --accent: #ff3b3b;
+      --muted: #bdbdbd;
     }
 
     *{ box-sizing: border-box; }
-    html, body{ height:100%; }
+    html, body{ height:100%; margin:0; padding:0; }
 
     body{
-      margin:0;
       font-family: Inter, system-ui, sans-serif;
       color: var(--text);
       display:flex;
       flex-direction:column;
       min-height:100vh;
 
+      /* background: image controlled by JS (background-position updated) */
       background-image: url("background.png");
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center 0%;
+      background-color: black;
     }
 
-    /* GLASS CARDS — MORE GLASS, MORE BLUR */
+    header{
+      padding:1rem;
+      border-bottom:1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      position:relative;
+      z-index:20;
+    }
+
+    .brand img{
+      height:40px;
+      width:auto;
+      display:block;
+      user-select:none;
+    }
+
+    nav a{
+      text-decoration:none;
+      color:var(--muted);
+      margin-left:1rem;
+      font-size:0.95rem;
+    }
+
+    main{
+      flex:1;
+      padding:1.25rem;
+      max-width:1000px;
+      width:100%;
+      margin:0 auto;
+      z-index:5;
+    }
+
+    /* GLASS CARDS — stronger blur, more transparent */
     .card, .port-card{
-      border:1px solid rgba(255,255,255,0.25);
+      border:1px solid rgba(255,255,255,0.12);
       padding:1rem;
       border-radius:10px;
-      backdrop-filter: blur(12px);
-      background: rgba(0,0,0,0.35); /* MORE transparent */
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      background: rgba(0,0,0,0.30); /* more transparent */
       margin-bottom:1rem;
-      color:white;
+      color:var(--text);
+      transition: background .18s ease, transform .12s ease;
     }
 
-    /* GLASSY FOOTER */
+    /* when a child title hovered we make the card slightly more opaque */
+    .port-card.title-hover {
+      background: rgba(0,0,0,0.45);
+      transform: translateY(-3px);
+    }
+
     footer{
       padding:0.75rem 1rem;
-      border-top:1px solid rgba(255,255,255,0.25);
+      border-top:1px solid rgba(255,255,255,0.12);
       text-align:center;
       color:var(--muted);
-      background: rgba(0,0,0,0.35);
+      background: rgba(0,0,0,0.30);
       backdrop-filter: blur(10px);
     }
 
-    /* Hamburger Button */
+    /* SQUARE hamburger button */
     .dashboard-btn{
       background:none;
-      border:1px solid white;
-      padding:0.6rem;
+      border:1px solid rgba(255,255,255,0.9);
+      padding:0.45rem;
       width:42px;
       height:42px;
       border-radius:6px;
@@ -64,54 +104,120 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      transition:0.2s ease;
+      transition: background .12s ease;
     }
-    .dashboard-btn:hover{
-      background:rgba(255,255,255,0.1);
+    .dashboard-btn:focus { outline:2px solid rgba(255,255,255,0.12); }
+
+    .dashboard-btn:hover{ background: rgba(255,255,255,0.03); }
+
+    .dash-icon{
+      width:22px;
+      height:16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      pointer-events:none;
     }
 
-    /* ▼ ANIMATED GLASS DROPDOWN (INTERACTIVE) */
+    .dash-icon div{
+      height:2.75px;
+      background:white; /* white icon requested */
+      border-radius:2px;
+    }
+
+    /* Animated glass dropdown (class-based) */
     .dashboard-panel{
       position:absolute;
       right:1rem;
       top:65px;
-      background:rgba(0,0,0,0.45); /* glassy */
-      border:1px solid rgba(255,255,255,0.25);
+      background:rgba(0,0,0,0.36);
+      border:1px solid rgba(255,255,255,0.08);
       padding:0.5rem;
-      border-radius:6px;
-      width:210px;
+      border-radius:8px;
+      width:220px;
       backdrop-filter: blur(12px);
-
+      transform-origin: top right;
       opacity:0;
-      transform: translateY(-8px);
+      transform: translateY(-8px) scale(.985);
       pointer-events:none;
-
-      transition: opacity .25s ease, transform .25s ease;
-      z-index:10;
+      transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
+      z-index:30;
     }
 
     .dashboard-panel.open{
       opacity:1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
       pointer-events:auto;
     }
 
-    /* ▼ MENU HOVER EFFECTS */
     .dashboard-panel a{
       display:block;
-      color:white;
+      color:var(--text);
       text-decoration:none;
-      padding:0.35rem 0.5rem;
+      padding:0.45rem 0.6rem;
       border-radius:6px;
       font-size:0.95rem;
-      transition:0.18s ease;
+      transition: background .15s ease, color .15s ease, transform .12s ease;
     }
 
+    .dashboard-panel a:focus { outline:2px solid rgba(255,255,255,0.06); }
+
     .dashboard-panel a:hover{
-      background:rgba(255,255,255,0.25); /* less transparent */
-      color:var(--hover-red);
+      background: rgba(255,255,255,0.12); /* less transparent */
+      color: var(--accent); /* red */
+      transform: translateX(6px);
+      font-weight:600;
+    }
+
+    /* Grid */
+    #portContainer{
+      margin-top:1.25rem;
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+      gap:1rem;
+    }
+
+    /* CLICKABLE anchor blocks */
+    .port-card-link{
+      display:block;
+      text-decoration:none;
+      color:var(--text);
+      outline: none;
+    }
+    .port-card-link:focus .port-card { box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
+
+    .port-card img{
+      width:100%;
+      border-radius:8px;
+      margin-bottom:0.5rem;
+      display:block;
+      object-fit:cover;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .port-card h2{
+      text-align:center;
+      margin:0;
+      padding:0.35rem 0 0;
       font-size:1.05rem;
-      transform:translateX(4px);
+      transition: color .12s ease, transform .12s ease;
+      color:var(--text);
+    }
+
+    /* Title hover interaction (turn red, bigger) */
+    .port-card h2:hover{
+      color: var(--accent);
+      transform: scale(1.06);
+    }
+
+    /* pointer cursor on hover for anchors */
+    .port-card-link:hover { cursor:pointer; }
+
+    /* small responsive nicety */
+    @media (max-width:600px){
+      nav{ display:none; }
+      main{ padding:1rem; }
+      #portContainer{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -128,31 +234,28 @@
       <a href="#">Contact</a>
     </nav>
 
-    <button id="dashBtn" class="dashboard-btn">
-      <div class="dash-icon">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+    <!-- White 3-dash hamburger (square) -->
+    <button id="dashBtn" class="dashboard-btn" aria-controls="dashPanel" aria-expanded="false" title="Open dashboard">
+      <span class="dash-icon" aria-hidden="true">
+        <div></div><div></div><div></div>
+      </span>
     </button>
   </header>
 
-  <div id="dashPanel" class="dashboard-panel">
-    <a href="#">Settings</a>
-    <a href="#">Account</a>
-    <a href="#">Tools</a>
-    <a href="#">Dev Options</a>
+  <div id="dashPanel" class="dashboard-panel" role="menu" aria-hidden="true">
+    <a href="#" role="menuitem">Settings</a>
+    <a href="#" role="menuitem">Account</a>
+    <a href="#" role="menuitem">Tools</a>
+    <a href="#" role="menuitem">Dev Options</a>
   </div>
 
   <main>
-
     <section class="card">
       <h1>Welcome to Web-Ported!</h1>
-      <p>webports downloaded from gn-math, credits to genizy <3 </p>
+      <p>webports downloaded from gn-math, credits to genizy &lt;3</p>
     </section>
 
-    <div id="portContainer"></div>
-
+    <div id="portContainer" aria-live="polite"></div>
   </main>
 
   <footer>
@@ -160,67 +263,156 @@
   </footer>
 
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // safe DOM-ready wrapper
+    (function () {
+      // set year
+      const yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    /* INTERACTIVE DROPDOWN */
-    const dashBtn = document.getElementById("dashBtn");
-    const dashPanel = document.getElementById("dashPanel");
+      /* ---------------------------
+         Dropdown logic (robust)
+      ----------------------------*/
+      const dashBtn = document.getElementById('dashBtn');
+      const dashPanel = document.getElementById('dashPanel');
 
-    dashBtn.addEventListener("click", () => {
-      dashPanel.classList.toggle("open");
-    });
-
-    document.addEventListener("click", (e) => {
-      if(!dashPanel.contains(e.target) && !dashBtn.contains(e.target)){
-        dashPanel.classList.remove("open");
+      function openPanel() {
+        dashPanel.classList.add('open');
+        dashPanel.setAttribute('aria-hidden', 'false');
+        dashBtn.setAttribute('aria-expanded', 'true');
       }
-    });
+      function closePanel() {
+        dashPanel.classList.remove('open');
+        dashPanel.setAttribute('aria-hidden', 'true');
+        dashBtn.setAttribute('aria-expanded', 'false');
+      }
+      function togglePanel() {
+        dashPanel.classList.contains('open') ? closePanel() : openPanel();
+      }
 
-    /* BACKGROUND SCROLL (unchanged) */
-    function updateBackgroundScroll(){
-      const scrollTop = window.scrollY;
-      const docHeight = document.body.scrollHeight - window.innerHeight;
-
-      let scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
-
-      scrollPercent = scrollPercent * 0.25;
-      scrollPercent = Math.min(Math.max(scrollPercent, 0), 0.25);
-
-      const yPos = scrollPercent * 100;
-      document.body.style.backgroundPosition = `center ${yPos}%`;
-    }
-
-    window.addEventListener("scroll", updateBackgroundScroll);
-    window.addEventListener("resize", updateBackgroundScroll);
-    updateBackgroundScroll();
-
-    /* PORT LOAD (unchanged) */
-    const portContainer = document.getElementById("portContainer");
-
-    fetch("ports.json")
-      .then(res => res.json())
-      .then(data => {
-        data.forEach(item => {
-
-          const wrapper = document.createElement("a");
-          wrapper.href = item.link;
-          wrapper.target = "_blank";
-          wrapper.className = "port-card-link";
-
-          const card = document.createElement("div");
-          card.className = "port-card";
-
-          card.innerHTML = `
-            <img src="${item.image}" alt="${item.title}">
-            <h2>${item.title}</h2>
-          `;
-
-          wrapper.appendChild(card);
-          portContainer.appendChild(wrapper);
+      if (dashBtn && dashPanel) {
+        dashBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          togglePanel();
         });
-      })
-      .catch(err => console.error("Failed to load ports.json:", err));
-  </script>
 
+        // close when clicking outside
+        document.addEventListener('click', function (e) {
+          if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) {
+            closePanel();
+          }
+        });
+
+        // keyboard: Escape closes
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') closePanel();
+        });
+      }
+
+      /* ---------------------------
+         Background scroll (resilient)
+         - slowFactor controls how much the background moves relative to page scroll
+         - clamp prevents image leaving the viewport
+      ----------------------------*/
+      function updateBackgroundScroll() {
+        try {
+          const scrollTop = window.scrollY || window.pageYOffset || 0;
+          const docHeight = Math.max(document.body.scrollHeight - window.innerHeight, 0);
+
+          // if page has no scroll, keep at top
+          let scrollPercent = docHeight > 0 ? (scrollTop / docHeight) : 0;
+
+          // slower movement factor (smaller = slower)
+          const slowFactor = 0.22;
+
+          // compute limited percent and clamp between 0 and slowFactor
+          let mapped = Math.min(Math.max(scrollPercent * slowFactor, 0), slowFactor);
+
+          // convert to percentage for background-position
+          const yPercent = mapped / slowFactor * (slowFactor * 100); // yields 0..(slowFactor*100)
+          // simpler: just use mapped*100
+          document.body.style.backgroundPosition = 'center ' + (mapped * 100) + '%';
+        } catch (err) {
+          // don't break page if something odd happens
+          console.error('bg scroll error', err);
+        }
+      }
+
+      window.addEventListener('scroll', updateBackgroundScroll, { passive: true });
+      window.addEventListener('resize', updateBackgroundScroll);
+      // initial
+      updateBackgroundScroll();
+
+      /* ---------------------------
+         Load ports.json and build cards
+      ----------------------------*/
+      const portContainer = document.getElementById('portContainer');
+
+      function makeCard(item) {
+        // wrapper anchor
+        const a = document.createElement('a');
+        a.className = 'port-card-link';
+        // guard empty link: if empty, link to '#' and don't open new tab
+        a.href = item.link && item.link.trim() ? item.link : '#';
+        if (item.link && item.link.trim()) a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+
+        const card = document.createElement('div');
+        card.className = 'port-card';
+
+        // image element (use provided image path)
+        const img = document.createElement('img');
+        img.src = item.image || 'icon.png';
+        img.alt = item.title || 'item';
+        img.loading = 'lazy';
+
+        const h2 = document.createElement('h2');
+        h2.textContent = item.title || '';
+
+        // hover interactivity: when title hovered, make parent card more opaque
+        h2.addEventListener('mouseenter', () => card.classList.add('title-hover'));
+        h2.addEventListener('mouseleave', () => card.classList.remove('title-hover'));
+
+        card.appendChild(img);
+        card.appendChild(h2);
+        a.appendChild(card);
+
+        return a;
+      }
+
+      // fetch with graceful fallback
+      (function loadPorts() {
+        if (!portContainer) return;
+        fetch('ports.json', { cache: 'no-store' })
+          .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            return res.json();
+          })
+          .then(data => {
+            if (!Array.isArray(data)) throw new Error('ports.json is not an array');
+            // clear container
+            portContainer.innerHTML = '';
+            data.forEach(item => {
+              try {
+                const node = makeCard(item);
+                portContainer.appendChild(node);
+              } catch (err) {
+                console.error('card build error', err, item);
+              }
+            });
+          })
+          .catch(err => {
+            console.warn('Failed to load ports.json — showing placeholder:', err);
+            // fallback: show a friendly placeholder card
+            portContainer.innerHTML = `
+              <div class="card">
+                <strong>Could not load ports.json</strong>
+                <p>Check console for details. Place a valid <code>ports.json</code> file in the site root (array of {image,title,link}).</p>
+              </div>
+            `;
+          });
+      })();
+
+    })();
+  </script>
 </body>
 </html>

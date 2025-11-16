@@ -4,119 +4,222 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Web-Ported - WebGL ports</title>
-<style>
-:root{
-  --bg: #000000;
-  --text: #ffffff;
-  --accent: #ff3b3b;
-  --muted: #bdbdbd;
-}
 
-*{ box-sizing: border-box; }
-html, body{ height:100%; margin:0; padding:0; }
+  <style>
+    :root{
+      --bg: #000000;
+      --text: #ffffff;
+      --accent: #ff3b3b;
+      --muted: #bdbdbd;
+    }
 
-body{
-  font-family: Inter, system-ui, sans-serif;
-  color: var(--text);
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
-  background-image: url("background.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center 0%;
-  background-color: black;
-}
+    *{ box-sizing: border-box; }
+    html, body{ height:100%; margin:0; padding:0; }
 
-/* HEADER + FOOTER glow */
-header, footer {
-  text-shadow: 0 0 6px rgba(255,255,255,0.55);
-}
+    body{
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
 
-/* -----------------------------
-   GLASS CARD (BASE)
------------------------------ */
-.port-card{
-  border:1px solid rgba(255,255,255,0.12);
-  padding:1rem;
-  border-radius:12px;
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
-  background: rgba(0,0,0,0.32);
-  margin-bottom:1rem;
-  color:var(--text);
-  transition: 
-    transform .28s cubic-bezier(.25,.9,.3,1.08),
-    background .22s ease,
-    box-shadow .28s ease;
-  transform-origin: center center; /* keeps card in same place */
-}
+      /* background: image controlled by JS (background-position updated) */
+      background-image: url("background.png");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center 0%;
+      background-color: black;
+    }
 
-/* -----------------------------
-   CARD HOVER — smooth grow, glow
------------------------------ */
-.port-card-link:hover .port-card{
-  transform: scale(1.1);
-  background: rgba(0,0,0,0.40);
-  box-shadow: 0 0 22px rgba(255,255,255,0.12);
-}
+    header{
+      padding:1rem;
+      border-bottom:1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      position:relative;
+      z-index:20;
+    }
 
-/* smaller images */
-.port-card img{
-  width:100%;
-  height:150px;
-  object-fit:cover;
-  border-radius:8px;
-  margin-bottom:0.5rem;
-  display:block;
-}
+    .brand img{
+      height:40px;
+      width:auto;
+      display:block;
+      user-select:none;
+    }
 
-/* keep text hover color, remove scale */
-.port-card h2{
-  text-align:center;
-  margin:0;
-  padding:0.35rem 0 0;
-  font-size:1.05rem;
-  color:var(--text);
-  transition: color .16s ease;
-}
-.port-card h2:hover{
-  color: var(--accent);
-}
+    nav a{
+      text-decoration:none;
+      color:var(--muted);
+      margin-left:1rem;
+      font-size:0.95rem;
+    }
 
-/* clickable block */
-.port-card-link{
-  display:block;
-  text-decoration:none;
-  color:var(--text);
-}
+    main{
+      flex:1;
+      padding:1.25rem;
+      max-width:1000px;
+      width:100%;
+      margin:0 auto;
+      z-index:5;
+    }
 
-/* disable old hover movement */
-.port-card.title-hover { transform:none !important; }
+    /* GLASS CARDS — stronger blur, more transparent */
+    .card, .port-card{
+      border:1px solid rgba(255,255,255,0.12);
+      padding:1rem;
+      border-radius:10px;
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      background: rgba(0,0,0,0.30); /* more transparent */
+      margin-bottom:1rem;
+      color:var(--text);
+      transition: background .18s ease, transform .12s ease;
+    }
 
-/* dashboard glass */
-.dashboard-panel{
-  background:rgba(0,0,0,0.38);
-  backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,0.12);
-}
+    /* when a child title hovered we make the card slightly more opaque */
+    .port-card.title-hover {
+      background: rgba(0,0,0,0.45);
+      transform: translateY(-3px);
+    }
 
-/* footer links */
-footer{
-  text-align:center;
-  padding:1rem;
-}
-footer a{
-  color:white;
-  text-shadow:0 0 6px rgba(255,255,255,0.6);
-  margin:0 10px;
-  text-decoration:none;
-  font-size:0.95rem;
-}
-footer a:hover{
-  color:var(--accent);
-}
-</style>
+    footer{
+      padding:0.75rem 1rem;
+      border-top:1px solid rgba(255,255,255,0.12);
+      text-align:center;
+      color:var(--muted);
+      background: rgba(0,0,0,0.30);
+      backdrop-filter: blur(10px);
+    }
+
+    /* SQUARE hamburger button */
+    .dashboard-btn{
+      background:none;
+      border:1px solid rgba(255,255,255,0.9);
+      padding:0.45rem;
+      width:42px;
+      height:42px;
+      border-radius:6px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: background .12s ease;
+    }
+    .dashboard-btn:focus { outline:2px solid rgba(255,255,255,0.12); }
+
+    .dashboard-btn:hover{ background: rgba(255,255,255,0.03); }
+
+    .dash-icon{
+      width:22px;
+      height:16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      pointer-events:none;
+    }
+
+    .dash-icon div{
+      height:2.75px;
+      background:white; /* white icon requested */
+      border-radius:2px;
+    }
+
+    /* Animated glass dropdown (class-based) */
+    .dashboard-panel{
+      position:absolute;
+      right:1rem;
+      top:65px;
+      background:rgba(0,0,0,0.36);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:0.5rem;
+      border-radius:8px;
+      width:220px;
+      backdrop-filter: blur(12px);
+      transform-origin: top right;
+      opacity:0;
+      transform: translateY(-8px) scale(.985);
+      pointer-events:none;
+      transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
+      z-index:30;
+    }
+
+    .dashboard-panel.open{
+      opacity:1;
+      transform: translateY(0) scale(1);
+      pointer-events:auto;
+    }
+
+    .dashboard-panel a{
+      display:block;
+      color:var(--text);
+      text-decoration:none;
+      padding:0.45rem 0.6rem;
+      border-radius:6px;
+      font-size:0.95rem;
+      transition: background .15s ease, color .15s ease, transform .12s ease;
+    }
+
+    .dashboard-panel a:focus { outline:2px solid rgba(255,255,255,0.06); }
+
+    .dashboard-panel a:hover{
+      background: rgba(255,255,255,0.12); /* less transparent */
+      color: var(--accent); /* red */
+      transform: translateX(6px);
+      font-weight:600;
+    }
+
+    /* Grid */
+    #portContainer{
+      margin-top:1.25rem;
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+      gap:1rem;
+    }
+
+    /* CLICKABLE anchor blocks */
+    .port-card-link{
+      display:block;
+      text-decoration:none;
+      color:var(--text);
+      outline: none;
+    }
+    .port-card-link:focus .port-card { box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
+
+    .port-card img{
+      width:100%;
+      border-radius:8px;
+      margin-bottom:0.5rem;
+      display:block;
+      object-fit:cover;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .port-card h2{
+      text-align:center;
+      margin:0;
+      padding:0.35rem 0 0;
+      font-size:1.05rem;
+      transition: color .12s ease, transform .12s ease;
+      color:var(--text);
+    }
+
+    /* Title hover interaction (turn red, bigger) */
+    .port-card h2:hover{
+      color: var(--accent);
+      transform: scale(1.06);
+    }
+
+    /* pointer cursor on hover for anchors */
+    .port-card-link:hover { cursor:pointer; }
+
+    /* small responsive nicety */
+    @media (max-width:600px){
+      nav{ display:none; }
+      main{ padding:1rem; }
+      #portContainer{ grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
@@ -155,15 +258,9 @@ footer a:hover{
     <div id="portContainer" aria-live="polite"></div>
   </main>
 
-<footer>
-  <a href="#">version: v0.1</a><br>
-  <a href="#">discord</a><br>
-  <a href="#">suggestions & bug fixes</a><br>
-  <a href="#">other projects</a>
-  <br>
-  © <span id="year"></span>
-</footer>
-
+  <footer>
+    © <span id="year"></span> My Site
+  </footer>
 
   <script>
     // safe DOM-ready wrapper

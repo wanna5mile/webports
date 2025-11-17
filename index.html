@@ -257,11 +257,15 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
   border-radius: 20px;
   position: relative;
   max-width: 80%;
+  width: fit-content;    /* NEW */
+  white-space: normal;   /* NEW — allows wrapping */
+  word-wrap: break-word; /* NEW — forces long words to wrap */
   font-size: 1.1rem;
   line-height: 1.4;
   margin: 20px;
   text-shadow: none;
 }
+
 
 /* bubble tail */
 #welcomeMessage::after {

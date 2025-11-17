@@ -291,7 +291,10 @@ footer span{
       <img src="search.png" class="icon">
     </div>
 
-    <div class="profile-icon" id="openProfile"><img src="profile.png"></div>
+    <!-- UPDATED: header image now has an ID -->
+    <div class="profile-icon" id="openProfile">
+      <img id="headerProfileImg" src="profile.png">
+    </div>
   </div>
 
   <button id="dashBtn" class="dashboard-btn">
@@ -424,28 +427,29 @@ settingsBtn.onclick=showSettings;
 const profileUpload=document.getElementById("profileUpload");
 const profilePreview=document.getElementById("profilePreview");
 const saveProfile=document.getElementById("saveProfile");
+const headerProfileImg=document.getElementById("headerProfileImg");
 
-// Load saved
+// Load saved profile image
 if(localStorage.profileImage){
-  profilePreview.src=localStorage.profileImage;
-  document.querySelector(".profile-icon img").src=localStorage.profileImage;
+  profilePreview.src = localStorage.profileImage;
+  headerProfileImg.src = localStorage.profileImage;
 }
 
-// Preview
+// Preview before save
 profileUpload.oninput=e=>{
   const file=e.target.files[0];
   if(!file)return;
   const reader=new FileReader();
   reader.onload=ev=>{
-    profilePreview.src=ev.target.result;
+    profilePreview.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 };
 
-// Save
+// Save + update header
 saveProfile.onclick=()=>{
-  localStorage.profileImage=profilePreview.src;
-  document.querySelector(".profile-icon img").src=profilePreview.src;
+  localStorage.profileImage = profilePreview.src;
+  headerProfileImg.src = profilePreview.src;
   alert("Profile saved!");
 };
 

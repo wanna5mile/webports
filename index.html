@@ -290,6 +290,25 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
   border-radius: 50%;
 }
 
+  /* Small circle speaker icon next to thought bubble */
+#thoughtSpeaker {
+  position: relative;
+  width: 55px;
+  height: 55px;
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+#thoughtSpeaker img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+}
+
 </style>
 </head>
 <body id="pageBody">
@@ -333,6 +352,10 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
     </button>
   </div>
 </header>
+  
+  <div id="thoughtSpeaker">
+  <img src="thoth.png" alt="speaker" />
+</div>
 
 <h1 id="welcomeMessage">Loading welcome message...</h1>
 

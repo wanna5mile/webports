@@ -246,6 +246,46 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
   main{ padding:1rem; }
   #portContainer{ grid-template-columns:1fr; }
 }
+
+  /* THOUGHT-BUBBLE WELCOME MESSAGE */
+#welcomeMessage {
+  display: inline-block;
+  background: rgba(0,0,0,0.75);
+  color: white;
+  font-weight: 400;
+  padding: 15px 20px;
+  border-radius: 20px;
+  position: relative;
+  max-width: 80%;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin: 20px;
+  text-shadow: none;
+}
+
+/* bubble tail */
+#welcomeMessage::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 35px;
+  width: 22px;
+  height: 22px;
+  background: rgba(0,0,0,0.75);
+  border-radius: 50%;
+}
+
+#welcomeMessage::before {
+  content: "";
+  position: absolute;
+  bottom: -25px;
+  left: 18px;
+  width: 14px;
+  height: 14px;
+  background: rgba(0,0,0,0.75);
+  border-radius: 50%;
+}
+
 </style>
 </head>
 <body id="pageBody">
@@ -290,8 +330,9 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
   </div>
 </header>
 
-<h1>Welcome <span>user-name</span> to version:v<span>version-number</span> explore web-ports and cusomization for the web layout in the settings.</h1>
-<main id="mainContent">
+<h1 id="welcomeMessage">Loading welcome message...</h1>
+
+  <main id="mainContent">
   <div id="portContainer"></div>
 </main>
 

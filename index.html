@@ -1,87 +1,279 @@
-<!-- UPDATED FULL HTML WITH PROFILE EDIT + SETTINGS + HOVER GROW -->
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Web-Ported - WebGL ports</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Web-Ported - WebGL Ports</title>
   <link rel="icon" href="favicon.png" type="image/png">
 
-  <style>
-    :root{
-      --bg: #fff;
-      --text: #ffffff;
-      --accent: #ff3b3b;
-      --muted: #fff;
-      --theme-bg: url("background.png");
-    }
-    body{ background-image: var(--theme-bg); }
+<style>
+/* ROOT */
+:root{
+  --text:#fff;
+  --accent:#ff3b3b;
+  --theme-bg:url("background.png");
+}
 
-    *{ box-sizing:border-box; }
-    html, body{ height:100%; margin:0; padding:0; }
+/* GENERAL */
+*{ box-sizing:border-box; }
+html,body{ height:100%; margin:0; padding:0; }
 
-    body{
-      font-family: Inter, system-ui, sans-serif;
-      color: var(--text);
-      display:flex;
-      flex-direction:column;
-      min-height:100vh;
-      background-repeat:no-repeat;
-      background-size:cover;
-      background-position:center 0%;
-      background-color:black;
-    }
+body{
+  font-family:Inter,system-ui,sans-serif;
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  background-image:var(--theme-bg);
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-position:center 0%;
+  background-color:black;
+}
 
-    header{ padding:1rem; border-bottom:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:space-between; position:relative; z-index:20; gap:1rem; }
-    nav a{ text-decoration:none; color:white; margin-left:1rem; font-size:0.95rem; transition:.2s; }
-    nav a:hover{ color:var(--accent); transform:scale(1.08); text-shadow:0 0 8px rgba(255,0,0,0.55); }
+/* HEADER */
+header{
+  padding:1rem;
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:relative;
+  z-index:20;
+  gap:1rem;
+}
+.brand img{ height:40px; user-select:none; }
 
-    .brand img{ height:40px; user-select:none; }
+/* NAV */
+nav a{
+  margin-left:1rem;
+  text-decoration:none;
+  color:white;
+  font-size:0.95rem;
+  transition:.2s;
+}
+nav a:hover{
+  color:var(--accent);
+  transform:scale(1.08);
+  text-shadow:0 0 8px rgba(255,0,0,0.55);
+}
 
-    /* SEARCH + PROFILE */
-    .search-wrap{ display:flex; align-items:center; gap:0.6rem; }
+/* SEARCH */
+.search-wrap{
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+}
+.search-box{
+  position:relative;
+  width:230px;
+}
+.search-box input{
+  width:100%;
+  padding:0.55rem 2.2rem 0.55rem 0.9rem;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(0,0,0,0.35);
+  color:white;
+  font-size:0.95rem;
+  backdrop-filter:blur(6px);
+}
+.search-box input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 8px rgba(255,0,0,0.4);
+}
+.search-box .icon{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  width:36px;
+  opacity:.85;
+}
 
-    .search-box{ position:relative; width:230px; }
-    .search-box input{
-      width:100%; padding:0.55rem 2.2rem 0.55rem 0.9rem; border-radius:20px;
-      border:1px solid rgba(255,255,255,0.18); background:rgba(0,0,0,0.35);
-      color:white; font-size:0.95rem; backdrop-filter: blur(6px);
-    }
-    .search-box input:focus{ border-color:var(--accent); box-shadow:0 0 8px rgba(255,0,0,0.4); }
+/* PROFILE BUTTON */
+.profile-icon{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(6px);
+  cursor:pointer;
+  transition:.22s;
+}
+.profile-icon:hover{
+  transform:scale(1.15);
+}
+.profile-icon img{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  object-fit:cover;
+}
 
-    .search-box .icon{ position:absolute; right:10px; top:50%; transform:translateY(-50%); width:36px; opacity:0.9; pointer-events:none; transition:.2s; }
-    .search-box .icon:hover{ transform:translateY(-50%) scale(1.25); }
+/* MAIN */
+main{
+  flex:1;
+  padding:1.25rem;
+  max-width:1200px;
+  width:100%;
+  margin:0 auto;
+}
 
-    .profile-icon{
-      width:42px; height:42px; border-radius:50%; border:1px solid rgba(255,255,255,0.25);
-      background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center;
-      backdrop-filter: blur(6px); cursor:pointer; transition:.2s;
-    }
-    .profile-icon:hover{ transform:scale(1.18); }
-    .profile-icon img{ width:100%; height:100%; object-fit:cover; transition:.2s; }
-    .profile-icon img:hover{ transform:scale(1.1); }
+/* PORT CARDS */
+#portContainer{
+  margin-top:1.25rem;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1rem;
+}
+.port-card-link{
+  text-decoration:none;
+  color:white;
+}
+.port-card{
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:10px;
+  padding:1rem;
+  text-align:center;
+  transition:transform .22s ease;
+  background:none;
+}
+.port-card-link:hover .port-card{
+  transform:scale(1.05);
+}
+.port-card img{
+  width:200px;
+  border-radius:15px;
+  margin-bottom:.5rem;
+}
 
-    main{ flex:1; padding:1.25rem; max-width:1200px; width:100%; margin:0 auto; }
+/* PROFILE PAGE */
+#profilePage,#settingsPage{
+  display:none;
+  background:rgba(0,0,0,0.45);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(8px);
+  padding:1rem;
+  border-radius:12px;
+  max-width:600px;
+  margin:0 auto;
+}
+#profilePage.active,#settingsPage.active{
+  display:block;
+}
 
-    /* PORT CARDS */
-    .port-card{ border:1px solid rgba(255,255,255,0.12); padding:1rem; border-radius:10px; transition:.22s; background:none; text-align:center; }
-    .port-card-link:hover .port-card{ transform:scale(1.05); }
-    .port-card img{ width:200px; border-radius:15px; margin-bottom:0.5rem; }
+#profilePreview{
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid white;
+  display:block;
+  margin:auto;
+}
 
-    /* PROFILE PAGE (HIDDEN BY DEFAULT) */
-    #profilePage, #settingsPage{
-      display:none; padding:1rem; max-width:600px; margin:0 auto;
-      background:rgba(0,0,0,0.45); border-radius:12px; border:1px solid rgba(255,255,255,0.12);
-      backdrop-filter:blur(8px);
-    }
+/* THEME BUTTON */
+.theme-btn{
+  padding:0.5rem 1rem;
+  border-radius:8px;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.2);
+  color:white;
+  cursor:pointer;
+  margin:0.25rem;
+  transition:.2s;
+}
+.theme-btn:hover{
+  transform:scale(1.06);
+}
 
-    #profilePage.active, #settingsPage.active{ display:block; }
+/* DASHBOARD ICON */
+.dashboard-btn{
+  background:none;
+  border:none;
+  padding:0.45rem;
+  width:42px;
+  height:42px;
+  cursor:pointer;
+}
+.dash-icon{
+  width:22px;
+  height:16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.dash-icon div{
+  height:3px;
+  background:white;
+  border-radius:2px;
+}
 
-    #profilePreview{ width:140px; height:140px; border-radius:50%; object-fit:cover; display:block; margin:auto; border:2px solid white; }
+/* DASHBOARD PANEL */
+.dashboard-panel{
+  position:absolute;
+  right:1rem;
+  top:65px;
+  width:220px;
+  padding:0.5rem;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:10px;
+  backdrop-filter:blur(12px);
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+  transition:.22s;
+}
+.dashboard-panel.open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+.dashboard-panel a{
+  display:block;
+  padding:0.5rem;
+  text-decoration:none;
+  color:white;
+  border-radius:6px;
+}
+.dashboard-panel a:hover{
+  background:rgba(255,255,255,0.12);
+  color:var(--accent);
+}
 
-    .theme-btn{ padding:0.5rem 1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.1); color:white; cursor:pointer; margin:0.3rem; }
-    .theme-btn:hover{ transform:scale(1.06); background:rgba(255,255,255,0.2); }
-  </style>
+/* FOOTER */
+hr{
+  border:0;
+  border-top:1px solid rgba(255,255,255,0.12);
+}
+footer{
+  padding:1rem;
+  text-align:center;
+}
+footer a{
+  color:white;
+  text-decoration:none;
+}
+footer a:hover{
+  color:var(--accent);
+}
+footer span{
+  display:block;
+  margin-top:4px;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+  nav{ display:none; }
+  #portContainer{ grid-template-columns:1fr; }
+}
+</style>
 </head>
 <body>
 
@@ -94,13 +286,22 @@
   </nav>
 
   <div class="search-wrap">
-    <div class="search-box"><input type="text" id="liveSearch" placeholder="Search ports..."><img src="search.png" class="icon"></div>
+    <div class="search-box">
+      <input id="liveSearch" type="text" placeholder="Search ports...">
+      <img src="search.png" class="icon">
+    </div>
+
     <div class="profile-icon" id="openProfile"><img src="profile.png"></div>
   </div>
+
+  <button id="dashBtn" class="dashboard-btn">
+    <span class="dash-icon"><div></div><div></div><div></div></span>
+  </button>
 </header>
 
 <main>
-  <!-- PORT LIST -->
+
+  <!-- HOME PORT LIST -->
   <div id="portContainer"></div>
 
   <!-- PROFILE PAGE -->
@@ -118,65 +319,167 @@
     <button class="theme-btn" data-bg="mountain.png">Mountain</button>
     <button class="theme-btn" data-bg="river.png">River</button>
   </section>
+
 </main>
 
+<!-- DASHBOARD PANEL -->
+<div id="dashboardPanel" class="dashboard-panel">
+  <p>Pages</p>
+  <a href="https://bguhm.github.io/music-player.html">Music Player</a>
+  <a href="system/pages/settings-themes.html">Themes</a>
+  <a href="system/pages/credits.html">Credits</a>
+  <p>Dev tools</p>
+  <a href="#">Console</a>
+  <a href="#">Inspector</a>
+</div>
+
+<hr>
+
+<footer>
+  <a href="#">Privacy Policy</a>
+  <a href="#">Terms of Service</a>
+  <span>© 2025 Web-Ported</span>
+</footer>
+
 <script>
-/* PORT LOADING */
-const portContainer=document.getElementById('portContainer');
+/* ===========================
+   PORT LOADING (OLD LOGIC)
+=========================== */
+const portContainer=document.getElementById("portContainer");
 let allPorts=[];
-function renderPorts(list){ portContainer.innerHTML=''; list.forEach(item=>{ const a=document.createElement('a'); a.className='port-card-link'; a.href=item.link; const card=document.createElement('div'); card.className='port-card'; const img=document.createElement('img'); img.src=item.image; const h2=document.createElement('h2'); h2.textContent=item.title; card.appendChild(img); card.appendChild(h2); a.appendChild(card); portContainer.appendChild(a); }); }
-fetch('ports.json').then(r=>r.json()).then(d=>{ allPorts=d; renderPorts(allPorts); });
 
-/* SEARCH */
-liveSearch.addEventListener('input',()=>{ const q=liveSearch.value.toLowerCase(); renderPorts(allPorts.filter(p=>p.title.toLowerCase().includes(q))); });
+function renderPorts(list){
+  portContainer.innerHTML="";
+  list.forEach(item=>{
+    const a=document.createElement("a");
+    a.className="port-card-link";
+    a.href=item.link;
 
-/* PAGE SWITCHING */
-const profilePage=document.getElementById('profilePage');
-const settingsPage=document.getElementById('settingsPage');
-const openProfile=document.getElementById('openProfile');
-const homeBtn=document.getElementById('homeBtn');
-const settingsBtn=document.getElementById('settingsBtn');
+    const card=document.createElement("div");
+    card.className="port-card";
 
-function showHome(){ profilePage.classList.remove('active'); settingsPage.classList.remove('active'); portContainer.style.display='grid'; }
-function showProfile(){ portContainer.style.display='none'; settingsPage.classList.remove('active'); profilePage.classList.add('active'); }
-function showSettings(){ portContainer.style.display='none'; profilePage.classList.remove('active'); settingsPage.classList.add('active'); }
+    const img=document.createElement("img");
+    img.src=item.image;
+
+    const h2=document.createElement("h2");
+    h2.textContent=item.title;
+
+    card.appendChild(img);
+    card.appendChild(h2);
+    a.appendChild(card);
+    portContainer.appendChild(a);
+  });
+}
+
+fetch("ports.json")
+  .then(r=>r.json())
+  .then(data=>{
+    allPorts=data;
+    renderPorts(allPorts);
+  });
+
+/* ===========================
+   LIVE SEARCH (OLD LOGIC)
+=========================== */
+const searchInput=document.getElementById("liveSearch");
+
+searchInput.addEventListener("input",()=>{
+  const q=searchInput.value.toLowerCase();
+  const filtered=allPorts.filter(p=>p.title.toLowerCase().includes(q));
+  renderPorts(filtered);
+});
+
+/* ===========================
+   PAGE SWITCHING
+=========================== */
+const profilePage=document.getElementById("profilePage");
+const settingsPage=document.getElementById("settingsPage");
+const openProfile=document.getElementById("openProfile");
+const homeBtn=document.getElementById("homeBtn");
+const settingsBtn=document.getElementById("settingsBtn");
+
+function showHome(){
+  profilePage.classList.remove("active");
+  settingsPage.classList.remove("active");
+  portContainer.style.display="grid";
+}
+function showProfile(){
+  portContainer.style.display="none";
+  settingsPage.classList.remove("active");
+  profilePage.classList.add("active");
+}
+function showSettings(){
+  portContainer.style.display="none";
+  profilePage.classList.remove("active");
+  settingsPage.classList.add("active");
+}
 
 openProfile.onclick=showProfile;
 homeBtn.onclick=showHome;
 settingsBtn.onclick=showSettings;
 
-/* PROFILE UPLOAD + LOCAL STORAGE */
-const profileUpload=document.getElementById('profileUpload');
-const profilePreview=document.getElementById('profilePreview');
-const saveProfile=document.getElementById('saveProfile');
+/* ===========================
+   PROFILE UPLOAD
+=========================== */
+const profileUpload=document.getElementById("profileUpload");
+const profilePreview=document.getElementById("profilePreview");
+const saveProfile=document.getElementById("saveProfile");
 
-// Load saved image
-if(localStorage.profileImage){ profilePreview.src=localStorage.profileImage; document.querySelector('.profile-icon img').src=localStorage.profileImage; }
+// Load saved
+if(localStorage.profileImage){
+  profilePreview.src=localStorage.profileImage;
+  document.querySelector(".profile-icon img").src=localStorage.profileImage;
+}
 
-// Preview selection
+// Preview
 profileUpload.oninput=e=>{
-  const file=e.target.files[0]; if(!file)return;
-  const reader=new FileReader(); reader.onload=ev=>{ profilePreview.src=ev.target.result; }; reader.readAsDataURL(file);
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    profilePreview.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
 };
 
 // Save
 saveProfile.onclick=()=>{
   localStorage.profileImage=profilePreview.src;
-  document.querySelector('.profile-icon img').src=profilePreview.src;
-  alert('Profile saved');
+  document.querySelector(".profile-icon img").src=profilePreview.src;
+  alert("Profile saved!");
 };
 
-/* THEME SWITCHING */
-document.querySelectorAll('.theme-btn[data-bg]').forEach(btn=>{
+/* ===========================
+   THEME SWITCHING
+=========================== */
+document.querySelectorAll(".theme-btn[data-bg]").forEach(btn=>{
   btn.onclick=()=>{
-    const bg=btn.dataset.bg;
-    document.documentElement.style.setProperty('--theme-bg',`url(${bg})`);
+    let bg=btn.dataset.bg;
+    document.documentElement.style.setProperty("--theme-bg",`url(${bg})`);
     localStorage.userBG=bg;
   };
 });
 
-// Load saved background
-if(localStorage.userBG){ document.documentElement.style.setProperty('--theme-bg',`url(${localStorage.userBG})`); }
+// Load saved theme
+if(localStorage.userBG){
+  document.documentElement.style.setProperty("--theme-bg",`url(${localStorage.userBG})`);
+}
+
+/* ===========================
+   DASHBOARD PANEL (OLD LOGIC)
+=========================== */
+const dashBtn=document.getElementById("dashBtn");
+const dashPanel=document.getElementById("dashboardPanel");
+
+dashBtn.addEventListener("click",()=>{
+  dashPanel.classList.toggle("open");
+});
+
+document.addEventListener("click",e=>{
+  if(!dashPanel.contains(e.target) && !dashBtn.contains(e.target)){
+    dashPanel.classList.remove("open");
+  }
+});
 </script>
 
 </body>

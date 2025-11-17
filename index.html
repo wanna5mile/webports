@@ -6,127 +6,7 @@
   <title>Web-Ported - WebGL ports</title>
   <link rel="icon" href="favicon.png" type="image/png">
 
-  <!-- Discord Widget -->
-  <script async defer src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3"></script>
-  <script>
-    window.addEventListener("load", () => {
-      if (typeof Crate !== "undefined") {
-        new Crate({
-          server: '1273329263923302430',
-          channel: '1329289920845713471'
-        });
-      }
-    });
-  </script>
-
-  <!-- Social Meta -->
-  <meta property="og:title" content="WannaSmile" />
-  <meta property="og:description" content="Welcome to WannaSmile — a library full of content! Enjoy it in your free time." />
-  <meta property="og:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
-  <meta property="og:url" content="https://vvannasmile.github.io/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="WannaSmile.github.io" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="WannaSmile" />
-  <meta name="twitter:description" content="A fun, content-filled library to make you smile." />
-  <meta name="twitter:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
-  
   <style>
-    :root{
-      --bg: #fff;
-      --text: #ffffff;
-      --accent: #ff3b3b;
-      --muted: #fff;
-    }
-
-    *{ box-sizing: border-box; }
-    html, body{ height:100%; margin:0; padding:0; }
-
-    body{
-      font-family: Inter, system-ui, sans-serif;
-      color: var(--text);
-      display:flex;
-      flex-direction:column;
-      min-height:100vh;
-      background-image: url("background.png");
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center 0%;
-      background-color: black;
-    }
-
-    header{
-      padding:1rem;
-      border-bottom:1px solid rgba(255,255,255,0.12);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:1rem;
-    }
-
-    /* NEW SEARCH BAR */
-    .search-wrap{
-      display:flex;
-      align-items:center;
-      gap:0.75rem;
-      flex:1;
-      justify-content:center;
-    }
-
-    .search-box{
-      position:relative;
-      width:260px;
-    }
-
-    .search-box input{
-      width:100%;
-      padding:0.55rem 2.2rem 0.55rem 0.9rem;
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,0.18);
-      background:rgba(0,0,0,0.35);
-      color:white;
-      font-size:0.95rem;
-      outline:none;
-      backdrop-filter: blur(6px);
-      transition: border .15s ease, box-shadow .15s ease;
-    }
-
-    .search-box input:focus{
-      border-color: var(--accent);
-      box-shadow:0 0 8px rgba(255,0,0,0.4);
-    }
-
-    .search-box .icon{
-      position:absolute;
-      right:10px;
-      top:50%;
-      transform:translateY(-50%);
-      width:18px;
-      opacity:0.8;
-      pointer-events:none;
-    }
-
-    /* PROFILE ICON */
-    .profile-icon{
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      border:1px solid rgba(255,255,255,0.25);
-      background:rgba(255,255,255,0.1);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      backdrop-filter: blur(6px);
-      cursor:pointer;
-    }
-
-    .profile-icon img{
-      width:22px;
-      opacity:0.9;
-    }
-
-    nav a{ text-decoration:none; color:white; margin-left:1rem; }
-
     :root{
       --bg: #fff;
       --text: #ffffff;
@@ -158,6 +38,7 @@
       justify-content:space-between;
       position:relative;
       z-index:20;
+      gap:1rem;
     }
 
     nav a{
@@ -180,6 +61,64 @@
       width:auto;
       display:block;
       user-select:none;
+    }
+
+    /* SEARCH + PROFILE */
+    .search-wrap{
+      display:flex;
+      align-items:center;
+      gap:0.6rem;
+    }
+
+    .search-box{
+      position:relative;
+      width:230px;
+    }
+
+    .search-box input{
+      width:100%;
+      padding:0.55rem 2.2rem 0.55rem 0.9rem;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,0.18);
+      background:rgba(0,0,0,0.35);
+      color:white;
+      font-size:0.95rem;
+      outline:none;
+      backdrop-filter: blur(6px);
+      transition: border .15s ease, box-shadow .15s ease;
+    }
+
+    .search-box input:focus{
+      border-color: var(--accent);
+      box-shadow:0 0 8px rgba(255,0,0,0.4);
+    }
+
+    .search-box .icon{
+      position:absolute;
+      right:10px;
+      top:50%;
+      transform:translateY(-50%);
+      width:18px;
+      opacity:0.8;
+      pointer-events:none;
+    }
+
+    .profile-icon{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,0.25);
+      background:rgba(255,255,255,0.1);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter: blur(6px);
+      cursor:pointer;
+    }
+
+    .profile-icon img{
+      width:22px;
+      opacity:0.9;
     }
 
     main{
@@ -206,7 +145,6 @@
       background: none;
     }
 
-    /* Grid */
     #portContainer{
       margin-top:1.25rem;
       display:grid;
@@ -219,15 +157,14 @@
       display:block;
       text-decoration:none;
       color:var(--text);
-      outline: none;
+      outline:none;
     }
 
-    .port-card-link:focus .port-card { box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
+    .port-card-link:focus .port-card{ box-shadow:0 6px 18px rgba(0,0,0,0.45); }
 
-    /* Removed glow/shadow on hover */
     .port-card-link:hover .port-card{
       transform: scale(1.05);
-      box-shadow: none;
+      box-shadow:none;
     }
 
     .port-card img{
@@ -243,13 +180,12 @@
       margin:0;
       padding:0.35rem 0 0;
       font-size:1.05rem;
-      transition: color .12s ease, transform .12s ease;
+      transition: color .12s ease;
       color:var(--text);
     }
 
     .port-card h2:hover{
-      color: var(--accent);
-      transform:none;
+      color:var(--accent);
     }
 
     /* DASHBOARD PANEL */
@@ -268,10 +204,7 @@
       transition: transform .18s ease;
     }
 
-    /* Grow dashboard button when hovered */
-    .dashboard-btn:hover{
-      transform: scale(1.1);
-    }
+    .dashboard-btn:hover{ transform: scale(1.1); }
 
     .dash-icon{
       width:22px;
@@ -322,8 +255,6 @@
       transition: background .15s ease, color .15s ease, transform .12s ease;
     }
 
-    .dashboard-panel a:focus { outline:2px solid rgba(255,255,255,0.06); }
-
     .dashboard-panel a:hover{
       background: rgba(255,255,255,0.12);
       color: var(--accent);
@@ -331,7 +262,7 @@
       font-weight:600;
     }
 
-    /* Footer */
+    /* FOOTER */
     hr{
       border:0;
       border-top:1px solid rgba(255,255,255,0.12);
@@ -345,7 +276,6 @@
       justify-content:center;
       gap:1rem;
       text-align:center;
-      backdrop-filter:none;
     }
 
     footer a{
@@ -354,7 +284,6 @@
       transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
     }
 
-    /* footer text smaller on hover */
     footer a:hover{
       color: var(--accent);
       transform: scale(1.05);
@@ -369,8 +298,8 @@
     @media (max-width:600px){
       nav{ display:none; }
       main{ padding:1rem; }
-      #portContainer{ grid-template-columns: 1fr; }
-    }    
+      #portContainer{ grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
@@ -405,6 +334,24 @@
 <main>
   <div id="portContainer"></div>
 </main>
+
+<!-- DASHBOARD PANEL -->
+<div id="dashboardPanel" class="dashboard-panel">
+  <p>pages</p>
+  <a href="https://bguhm.github.io/music-player.html">Music Player</a>
+  <a href="system/pages/settings-themes.html">Themes</a>
+  <a href="system/pages/credits.html">Credits</a>
+  <p>dev tools</p>
+  <a href="#">Console</a>
+  <a href="#">Inspector</a>
+</div>
+
+<hr>
+<footer>
+  <a href="#">Privacy Policy</a>
+  <a href="#">Terms of Service</a>
+  <span>© 2025 Web-Ported</span>
+</footer>
 
 <script>
 const portContainer = document.getElementById('portContainer');
@@ -445,6 +392,21 @@ searchInput.addEventListener('input', () => {
   const filtered = allPorts.filter(p => p.title.toLowerCase().includes(q));
   renderPorts(filtered);
 });
+// DASHBOARD OPEN/CLOSE
+const dashBtn = document.getElementById('dashBtn');
+const dashPanel = document.getElementById('dashboardPanel');
+
+dashBtn.addEventListener('click', () => {
+  dashPanel.classList.toggle('open');
+});
+
+// Close on outside click
+document.addEventListener('click', e => {
+  if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) {
+    dashPanel.classList.remove('open');
+  }
+});
+
 </script>
 
 </body>

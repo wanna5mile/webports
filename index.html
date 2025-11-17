@@ -31,7 +31,7 @@
 <meta name="twitter:description" content="A fun, content-filled library to make you smile." />
 <meta name="twitter:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
 
-<!-- Cropper.js CDN (confirmed) -->
+<!-- Cropper.js CDN -->
 <link href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" rel="stylesheet">
 <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
@@ -309,6 +309,7 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
 </head>
 <body id="pageBody">
 
+<!-- Loading Overlay -->
 <div id="loadingOverlay">
   <div class="loading-info">
     <div class="loading-text">Loading...</div>
@@ -324,7 +325,6 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
     <div class="brand">
       <img src="webgL.png" alt="Site Logo">
     </div>
-
     <nav>
       <a href="#" id="homeLink">Home</a>
       <a href="#">About</a>
@@ -332,17 +332,14 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
       <a href="#">Contact</a>
     </nav>
   </div>
-
   <div class="search-wrap">
     <div class="search-box">
       <input type="text" id="liveSearch" placeholder="Search ports...">
       <img src="search.png" class="icon" alt="search">
     </div>
-
     <div class="profile-icon" id="profileIcon" title="Open profile">
       <img id="profileImage" src="profile.png" alt="profile">
     </div>
-
     <button id="dashBtn" class="dashboard-btn">
       <span class="dash-icon"><div></div><div></div><div></div></span>
     </button>
@@ -350,14 +347,15 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
 </header>
 
 <h1 id="welcomeMessage">Loading welcome message...</h1>
-  <div id="thoughtSpeaker">
+<div id="thoughtSpeaker">
   <img src="thoth.png" alt="speaker" />
 </div>
-  
-  <main id="mainContent">
+
+<main id="mainContent">
   <div id="portContainer"></div>
 </main>
 
+<!-- Dashboard Panel -->
 <div id="dashboardPanel" class="dashboard-panel">
   <p>pages</p>
   <a href="https://bguhm.github.io/music-player.html">Music Player</a>
@@ -376,17 +374,14 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
   <a href="#">other projects</a>
 </footer>
 
-<!-- ===== PROFILE MODAL (NEW, merged) ===== -->
+<!-- Profile Modal -->
 <div id="profileModal" aria-hidden="true">
   <div id="profileModalContent" role="dialog" aria-modal="true">
     <h3>Edit Profile</h3>
-
     <img id="profileLarge" class="profile-large" src="profile.png" alt="Profile preview">
-
     <div>
       <input type="file" id="profilePicInput" accept="image/*" />
     </div>
-
     <div id="cropContainer">
       <img id="cropPreview" alt="Crop preview" />
       <div style="margin-top:8px;">
@@ -394,60 +389,46 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
         <button class="modal-btn cancel-btn" id="cropCancel">Cancel</button>
       </div>
     </div>
-
     <div style="margin-top:12px;">
       <button class="modal-btn remove-btn" id="removePicBtn">Remove picture</button>
     </div>
-
     <div style="margin-top:12px;">
       <input type="text" id="usernameInput" placeholder="Enter nickname" />
     </div>
-
     <div style="margin-top:14px;">
       <button class="modal-btn save-btn" id="saveProfileBtn">Save changes</button>
       <button class="modal-btn cancel-btn" id="closeProfileBtn">Close</button>
     </div>
   </div>
 </div>
+
 <script>
-// --- GLOBAL ELEMENTS & DATA ---
-const pageBody = document.getElementById('pageBody');
+// ---------- LOADING ----------
 const loadingOverlay = document.getElementById('loadingOverlay');
 const progressBar = document.getElementById('progressBar');
 const loadingPercent = document.getElementById('loadingPercent');
-const mainContent = document.getElementById('mainContent');
-const portContainer = document.getElementById('portContainer');
-const profileIcon = document.getElementById('profileIcon');
-const profileImageElement = document.getElementById('profileImage');
 
-const homeLink = document.getElementById('homeLink');
-const settingsLink = document.getElementById('settingsLink');
-
-let allPorts = [];
-let loadingInterval;
-
-/* ---------- Loading screen helpers ---------- */
 function updateProgress(percent) {
-  const safePercent = Math.min(100, Math.max(0, percent));
-  progressBar.style.width = `${safePercent}%`;
-  loadingPercent.textContent = `${Math.round(safePercent)}%`;
+  progressBar.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+  loadingPercent.textContent = `${Math.round(Math.min(100, Math.max(0, percent)))}%`;
 }
+
 function completeLoading() {
   updateProgress(100);
   setTimeout(() => loadingOverlay.classList.add('hidden'), 400);
 }
-function simulatePreload() {
-  let progress = 0;
-  updateProgress(30);
-  loadingInterval = setInterval(() => {
-    if (progress >= 90) { clearInterval(loadingInterval); return; }
-    progress += Math.random() * 5 + 2;
-    updateProgress(progress);
-  }, 150);
-}
-simulatePreload();
 
-/* ---------- Port rendering ---------- */
+let progress = 0;
+const loadingInterval = setInterval(() => {
+  if (progress >= 90) { clearInterval(loadingInterval); return; }
+  progress += Math.random() * 5 + 2;
+  updateProgress(progress);
+}, 150);
+
+// ---------- PORTS ----------
+const portContainer = document.getElementById('portContainer');
+let allPorts = [];
+
 function renderPorts(list){
   portContainer.innerHTML = '';
   list.forEach(item => {
@@ -467,24 +448,21 @@ function renderPorts(list){
   });
 }
 
-/* Fetch ports */
-fetch('ports.json').then(r=>r.json()).then(data=>{
-  allPorts = data;
-  renderPorts(allPorts);
-  clearInterval(loadingInterval);
-  completeLoading();
-}).catch(error => {
-  console.error("Error fetching ports.json:", error);
-  clearInterval(loadingInterval);
-  completeLoading();
-});
+fetch('ports.json')
+  .then(r => r.json())
+  .then(data => { allPorts = data; renderPorts(allPorts); clearInterval(loadingInterval); completeLoading(); })
+  .catch(err => { console.error("Error fetching ports.json:", err); clearInterval(loadingInterval); completeLoading(); });
 
-/* ---------- Settings page logic ---------- */
-function renderSettingsPage() {
+// ---------- SETTINGS ----------
+const pageBody = document.getElementById('pageBody');
+const mainContent = document.getElementById('mainContent');
+const settingsLink = document.getElementById('settingsLink');
+settingsLink.addEventListener('click', (e)=>{
+  e.preventDefault();
   mainContent.innerHTML = `
     <div id="settingsPanel" class="glass-panel">
       <h2>⚙️ Settings</h2>
-      <p>Background Image Selection (Images must be in the same folder as these files: graduation.png, checkerboard.png, creepybg.png, sillybg.png)</p>
+      <p>Background Image Selection</p>
       <div class="bg-button-container">
         <button class="bg-button" data-bg="background">Default</button>
         <button class="bg-button" data-bg="graduation">Graduation</button>
@@ -494,48 +472,40 @@ function renderSettingsPage() {
       </div>
     </div>
   `;
-  document.querySelectorAll('.bg-button').forEach(button => {
-    button.addEventListener('click', function() {
-      const bgClass = 'bg-' + this.dataset.bg;
-      pageBody.className = pageBody.className.split(' ').filter(c => !c.startsWith('bg-')).join(' ');
-      if (this.dataset.bg !== 'background') pageBody.classList.add(bgClass);
-      document.querySelectorAll('.bg-button').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.bg-button').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      pageBody.className = pageBody.className.split(' ').filter(c=>!c.startsWith('bg-')).join(' ');
+      if (this.dataset.bg!=='background') pageBody.classList.add('bg-'+this.dataset.bg);
+      document.querySelectorAll('.bg-button').forEach(b=>b.classList.remove('active'));
       this.classList.add('active');
     });
   });
-}
+});
 
-/* ---------- Dashboard open/close ---------- */
+// ---------- DASHBOARD ----------
 const dashBtn = document.getElementById('dashBtn');
 const dashPanel = document.getElementById('dashboardPanel');
-dashBtn.addEventListener('click', () => dashPanel.classList.toggle('open'));
-document.addEventListener('click', e => {
-  if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) dashPanel.classList.remove('open');
+dashBtn.addEventListener('click', ()=> dashPanel.classList.toggle('open'));
+document.addEventListener('click', e => { if(!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) dashPanel.classList.remove('open'); });
+
+// ---------- LIVE SEARCH ----------
+document.getElementById('liveSearch').addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase();
+  renderPorts(allPorts.filter(p=>p.title.toLowerCase().includes(q)));
 });
 
-/* ---------- Live search ---------- */
-const searchInput = document.getElementById('liveSearch');
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.toLowerCase();
-  const filtered = allPorts.filter(p => p.title.toLowerCase().includes(q));
-  renderPorts(filtered);
-});
-
-/* ---------- Home & Settings links ---------- */
-homeLink.addEventListener('click', (e) => {
+// ---------- HOME LINK ----------
+document.getElementById('homeLink').addEventListener('click', e=>{
   e.preventDefault();
   mainContent.innerHTML = '<div id="portContainer"></div>';
   renderPorts(allPorts);
 });
-settingsLink.addEventListener('click', (e) => {
-  e.preventDefault();
-  renderSettingsPage();
-});
 
-/* ========== PROFILE EDITOR ========== */
-const defaultPic = 'system/images/profile.png';
+// ---------- PROFILE EDITOR ----------
+const profileIcon = document.getElementById('profileIcon');
 const profileModal = document.getElementById('profileModal');
 const profileLarge = document.getElementById('profileLarge');
+const profileImageElement = document.getElementById('profileImage');
 const profilePicInput = document.getElementById('profilePicInput');
 const cropContainer = document.getElementById('cropContainer');
 const cropPreview = document.getElementById('cropPreview');
@@ -545,116 +515,95 @@ const removePicBtn = document.getElementById('removePicBtn');
 const usernameInput = document.getElementById('usernameInput');
 const saveProfileBtn = document.getElementById('saveProfileBtn');
 const closeProfileBtn = document.getElementById('closeProfileBtn');
+const defaultPic = 'system/images/profile.png';
+let cropper=null;
+let croppedImageData=null;
 
-let cropper = null;
-let croppedImageData = null;
-
-/* Load saved profile info */
-window.addEventListener('DOMContentLoaded', () => {
-  const savedPic = localStorage.getItem('profilePic');
-  const savedName = localStorage.getItem('nickname');
-
-  profileImageElement.src = savedPic || 'profile.png';
-  profileLarge.src = savedPic || 'profile.png';
-  usernameInput.value = savedName || '';
+// Load saved data
+window.addEventListener('DOMContentLoaded', ()=>{
+  const savedPic = localStorage.getItem('profilePic') || 'profile.png';
+  const savedName = localStorage.getItem('nickname') || '';
+  profileImageElement.src = savedPic;
+  profileLarge.src = savedPic;
+  usernameInput.value = savedName;
 });
 
-/* Open modal */
-profileIcon.addEventListener('click', () => {
-  mainContent.style.display = 'none';
-  profileModal.style.display = 'flex';
-  profileModal.setAttribute('aria-hidden', 'false');
+// Open modal
+profileIcon.addEventListener('click', ()=>{
+  mainContent.style.display='none';
+  profileModal.style.display='flex';
 });
 
-/* Close modal */
-function closeProfileModal() {
-  profileModal.style.display = 'none';
-  profileModal.setAttribute('aria-hidden', 'true');
-  mainContent.style.display = 'block';
-  if (cropper) { cropper.destroy(); cropper = null; }
-  cropContainer.style.display = 'none';
-  profilePicInput.value = '';
+// Close modal
+function closeProfileModal(){
+  profileModal.style.display='none';
+  mainContent.style.display='block';
+  if(cropper){ cropper.destroy(); cropper=null; }
+  cropContainer.style.display='none';
+  profilePicInput.value='';
 }
 closeProfileBtn.addEventListener('click', closeProfileModal);
-profileModal.addEventListener('click', (e) => {
-  if (e.target === profileModal) closeProfileModal();
-});
+profileModal.addEventListener('click', e=>{ if(e.target===profileModal) closeProfileModal(); });
 
-/* Remove picture */
-removePicBtn.addEventListener('click', () => {
-  profileLarge.src = defaultPic;
-  profileImageElement.src = defaultPic;
+// Remove pic
+removePicBtn.addEventListener('click', ()=>{
+  profileLarge.src=defaultPic;
+  profileImageElement.src=defaultPic;
   localStorage.setItem('profilePic', defaultPic);
 });
 
-/* Handle new file selection */
-profilePicInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+// Handle new file
+profilePicInput.addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
   const reader = new FileReader();
-  reader.onload = ev => {
-    cropContainer.style.display = 'block';
+  reader.onload = ev=>{
+    cropContainer.style.display='block';
     cropPreview.src = ev.target.result;
-    if (cropper) cropper.destroy();
-    cropper = new Cropper(cropPreview, {
-      aspectRatio: 1,
-      viewMode: 1,
-      dragMode: 'move',
-      background: false,
-      cropBoxResizable: true
-    });
+    if(cropper) cropper.destroy();
+    cropper = new Cropper(cropPreview, { aspectRatio:1, viewMode:1, dragMode:'move', background:false, cropBoxResizable:true });
   };
   reader.readAsDataURL(file);
 });
 
-/* Confirm crop */
-cropConfirm.addEventListener('click', () => {
-  if (!cropper) return;
-  const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+// Confirm crop
+cropConfirm.addEventListener('click', ()=>{
+  if(!cropper) return;
+  const canvas = cropper.getCroppedCanvas({width:300,height:300});
   croppedImageData = canvas.toDataURL('image/png');
   profileLarge.src = croppedImageData;
-  cropper.destroy();
-  cropper = null;
-  cropContainer.style.display = 'none';
-  profilePicInput.value = '';
+  cropper.destroy(); cropper=null; cropContainer.style.display='none'; profilePicInput.value='';
 });
 
-/* Cancel crop */
-cropCancel.addEventListener('click', () => {
-  if (cropper) cropper.destroy();
-  cropper = null;
-  cropContainer.style.display = 'none';
-  profilePicInput.value = '';
+// Cancel crop
+cropCancel.addEventListener('click', ()=>{
+  if(cropper) cropper.destroy(); cropper=null; cropContainer.style.display='none'; profilePicInput.value='';
 });
 
-/* Save profile */
-saveProfileBtn.addEventListener('click', () => {
+// Save profile
+saveProfileBtn.addEventListener('click', ()=>{
   const name = usernameInput.value.trim();
-  if (name) localStorage.setItem('nickname', name);
-  const finalImage = croppedImageData || profileLarge.src || defaultPic;
-  localStorage.setItem('profilePic', finalImage);
-  profileImageElement.src = finalImage;
-  croppedImageData = null;
+  if(name) localStorage.setItem('nickname', name);
+  const finalImg = croppedImageData || profileLarge.src || defaultPic;
+  localStorage.setItem('profilePic', finalImg);
+  profileImageElement.src = finalImg;
+  croppedImageData=null;
   closeProfileModal();
+  setTimeout(updateWelcomeMessage,150);
 });
 
-/* ---------- WELCOME MESSAGE LOADER ---------- */
+// ---------- WELCOME MESSAGE ----------
 const welcomeEl = document.getElementById("welcomeMessage");
-function updateWelcomeMessage() {
-  const username = localStorage.getItem("nickname") || "User";
-  fetch("site-info.json")
-    .then(r => r.json())
-    .then(info => {
-      const msg = info.message.replace("{username}", username).replace("{version}", info.version);
-      welcomeEl.textContent = msg;
-    })
-    .catch(err => {
-      console.error("Failed to load site-info.json:", err);
-      welcomeEl.textContent = `Welcome ${username}!`;
-    });
+function updateWelcomeMessage(){
+  const username = localStorage.getItem("nickname")||"User";
+  fetch("site-info.json").then(r=>r.json()).then(info=>{
+    welcomeEl.textContent = info.message.replace("{username}",username).replace("{version}",info.version);
+  }).catch(err=>{
+    console.error("Failed to load site-info.json:", err);
+    welcomeEl.textContent=`Welcome ${username}!`;
+  });
 }
 window.addEventListener("DOMContentLoaded", updateWelcomeMessage);
-saveProfileBtn.addEventListener("click", () => setTimeout(updateWelcomeMessage, 150));
+
 </script>
 
 </body>

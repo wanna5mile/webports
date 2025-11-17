@@ -30,6 +30,78 @@ body{
   background-color: black;
 }
 
+/* --- NEW LOADING SCREEN STYLES --- */
+
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Match the body background properties for a seamless transition/look */
+  background-image: url("background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center 0%;
+  background-color: black;
+  
+  z-index: 9999; /* Ensure it's on top of all other content */
+  display: flex; /* Use flexbox to position the info block */
+  align-items: flex-end; /* Align to the bottom */
+  padding: 20px; /* Space from the bottom/left edges */
+
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease-out, visibility 0.5s;
+}
+
+#loadingOverlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none; /* Allows clicks to pass through once hidden */
+}
+
+.loading-info {
+  /* Position the loading bar and text elements */
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between text and bar */
+  align-items: flex-start;
+  color: var(--text);
+}
+
+.loading-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+.loading-percentage {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent); /* Use your accent color */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+.loading-bar-container {
+  width: 250px; /* Set a fixed width for the bar */
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.loading-bar {
+  height: 100%;
+  width: 0%; /* Initial width */
+  background: var(--accent); /* Progress color */
+  border-radius: 4px;
+  transition: width 0.3s ease; /* Smooth animation for progress */
+}
+
+/* --- END LOADING SCREEN STYLES --- */
+
+
 header{
   padding:1rem;
   border-bottom:1px solid rgba(255,255,255,0.12);
@@ -327,6 +399,15 @@ footer span{
 </head>
 <body>
 
+<div id="loadingOverlay">
+  <div class="loading-info">
+    <div class="loading-text">Loading...</div>
+    <div id="loadingPercent" class="loading-percentage">0%</div>
+    <div class="loading-bar-container">
+      <div id="progressBar" class="loading-bar"></div>
+    </div>
+  </div>
+</div>
 <header>
   <div class="header-left">
     <div class="brand">
@@ -360,7 +441,6 @@ footer span{
   <div id="portContainer"></div>
 </main>
 
-<!-- DASHBOARD PANEL -->
 <div id="dashboardPanel" class="dashboard-panel">
   <p>pages</p>
   <a href="https://bguhm.github.io/music-player.html">Music Player</a>
@@ -380,8 +460,57 @@ footer span{
 </footer>
 
 <script>
+// --- 🚀 NEW: LOADING SCREEN LOGIC ---
+const loadingOverlay = document.getElementById('loadingOverlay');
+const progressBar = document.getElementById('progressBar');
+const loadingPercent = document.getElementById('loadingPercent');
 const portContainer = document.getElementById('portContainer');
 let allPorts = [];
+
+// Function to update the loading bar and percentage
+function updateProgress(percent) {
+  // Ensure the progress doesn't exceed 100
+  const safePercent = Math.min(100, Math.max(0, percent));
+  progressBar.style.width = `${safePercent}%`;
+  loadingPercent.textContent = `${Math.round(safePercent)}%`;
+}
+
+// Function to handle the final stage (fade out the overlay)
+function completeLoading() {
+    updateProgress(100);
+    // Allow a brief moment at 100% before fading out
+    setTimeout(() => {
+        loadingOverlay.classList.add('hidden');
+    }, 400); // 400ms delay for visual effect
+}
+
+// Function to simulate resource loading (0% to 90%)
+function simulatePreload() {
+    let progress = 0;
+    // Quickly jump to 30% and then simulate slower loading
+    updateProgress(30);
+
+    const interval = setInterval(() => {
+        // Stop the simulation once we reach the "ready" point (90%)
+        if (progress >= 90) {
+            clearInterval(interval);
+            // After pre-loading is done, we wait for the content/data to load
+            return; 
+        }
+
+        progress += Math.random() * 5 + 2; // Increment progress by a small random amount
+        updateProgress(progress);
+
+    }, 150); // Update every 150ms
+
+    return interval;
+}
+
+// Start the loading simulation immediately
+let loadingInterval = simulatePreload();
+
+
+// --- EXISTING WEBSITE LOGIC (Modified to integrate with loading) ---
 
 function renderPorts(list){
   portContainer.innerHTML = '';
@@ -406,9 +535,19 @@ function renderPorts(list){
   });
 }
 
+// ⚠️ MODIFIED: We run the fetch and then complete the loading process
 fetch('ports.json').then(r=>r.json()).then(data=>{
   allPorts = data;
   renderPorts(allPorts);
+  
+  // 🛑 NEW: Once the critical data is fetched and rendered, stop simulation and complete loading
+  clearInterval(loadingInterval);
+  completeLoading(); 
+}).catch(error => {
+    console.error("Error fetching ports.json:", error);
+    // Even if there's an error, we should still hide the loading screen
+    clearInterval(loadingInterval);
+    completeLoading();
 });
 
 // LIVE SEARCH

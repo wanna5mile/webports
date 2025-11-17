@@ -1,323 +1,598 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard + Profile Editor</title>
-<link rel="icon" href="system/images/favicons/logoo.png">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Web-Ported - WebGL ports</title>
+<link rel="icon" href="favicon.png" type="image/png">
 
-<!-- Cropper.js -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<!-- Discord Widget -->
+<script async defer src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3"></script>
+<script>
+  window.addEventListener("load", () => {
+    if (typeof Crate !== "undefined") {
+      new Crate({
+        server: '1439699996676063357',
+        channel: '1439699997758066774'
+      });
+    }
+  });
+</script>
+
+<!-- Social Meta -->
+<meta property="og:title" content="WannaSmile" />
+<meta property="og:description" content="Welcome to WannaSmile — a library full of content! Enjoy it in your free time." />
+<meta property="og:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
+<meta property="og:url" content="https://vvannasmile.github.io/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="WannaSmile.github.io" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="WannaSmile" />
+<meta name="twitter:description" content="A fun, content-filled library to make you smile." />
+<meta name="twitter:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
+
+<!-- Cropper.js CDN (confirmed) -->
+<link href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" rel="stylesheet">
+<script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
 <style>
-/* ===========================
-   GLOBAL STYLE
-=========================== */
-body {
-  margin: 0;
-  background: url("background.png");
+:root{
+  --bg: #fff;
+  --text: #ffffff;
+  --accent: #ff3b3b;
+  --muted: #fff;
+}
+
+*{ box-sizing: border-box; }
+html, body{ height:100%; margin:0; padding:0; }
+
+body{
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text);
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  /* Use CSS variable for background image control */
+  background-image: var(--page-background, url("background.png")); 
+  background-repeat: no-repeat;
   background-size: cover;
-  background-position: center;
-  font-family: monospace;
-  color: white;
-  overflow-x: hidden;
+  background-position: center 0%;
+  background-color: black;
 }
 
-/* Glassy header */
-header {
+/* --- BACKGROUND IMAGE CONTROL CLASSES --- */
+.bg-graduation { --page-background: url("graduation.png"); }
+.bg-checkerboard { --page-background: url("checkerboard.png"); }
+.bg-creepybg { --page-background: url("creepybg.png"); }
+.bg-sillybg { --page-background: url("sillybg.png"); }
+
+/* --- LOADING SCREEN STYLES (MODIFIED) --- */
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 15px 20px;
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(25px);
-  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+  height: 100%;
+  background-image: var(--page-background, url("loadingbg.png"));
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center 0%;
+  background-color: black;
+  z-index: 9999;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header h1 {
-  font-size: 22px;
-  margin: 0;
-}
-
-.profile-icon {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-  border: 2px solid #fff3;
-  transition: transform .15s;
-}
-.profile-icon:hover { transform: scale(1.1); }
-
-/* Dashboard content */
-#mainContent {
+  align-items: flex-end;
   padding: 20px;
-  text-align: center;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease-out, visibility 0.5s;
 }
+#loadingOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-info { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; color: var(--text); }
+.loading-text { font-size: 1.25rem; font-weight: 600; text-shadow: 0 0 5px rgba(0,0,0,0.7); }
+.loading-percentage { font-size: 1.5rem; font-weight: 700; color: var(--text); text-shadow: 0 0 5px rgba(0,0,0,0.7); }
+.loading-bar-container { width: 250px; height: 10px; background: rgba(0,0,0,0.3); border: 1px solid white; border-radius: 5px; overflow: hidden; padding:1px; }
+.loading-bar { height:100%; width:0%; background:white; border-radius:3px; transition: width .3s ease; }
 
-/* ===========================
-   PROFILE EDITOR POPUP
-=========================== */
-#profileEditorOverlay {
+/* header */
+header{
+  padding:1rem;
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:relative;
+  z-index:20;
+  gap:1rem;
+}
+.header-left{ display:flex; align-items:center; gap:2rem; }
+nav a{ text-decoration:none; color:white; font-size:0.95rem; display:inline-block; transition: color .2s, transform .2s, text-shadow .2s; }
+nav a:hover{ color: var(--accent); transform: scale(1.08); text-shadow: 0 0 8px rgba(255,0,0,0.55); }
+.brand img{ height:40px; width:auto; display:block; user-select:none; transition: transform .2s ease; }
+.brand img:hover{ transform: scale(1.1); }
+
+.search-wrap{ display:flex; align-items:center; gap:0.6rem; }
+.search-box{ position:relative; width:230px; }
+.search-box input{
+  width:100%;
+  padding:0.55rem 2.2rem 0.55rem 0.9rem;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(0,0,0,0.35);
+  color:white;
+  font-size:0.95rem;
+  outline:none;
+  backdrop-filter: blur(6px);
+  transition: border .15s ease, box-shadow .15s ease;
+}
+.search-box input:focus{ border-color: var(--accent); box-shadow:0 0 8px rgba(255,0,0,0.4); }
+.search-box .icon{ position:absolute; right:6px; top:50%; transform:translateY(-50%); width:30px; opacity:0.8; pointer-events:none; transition: transform .2s ease; }
+.search-wrap:hover .search-box .icon { transform: translateY(-50%) scale(1.2); }
+
+.profile-icon{ width:36px; height:36px; border-radius:50%; border:1px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; backdrop-filter: blur(6px); cursor:pointer; transition: transform .2s ease; }
+.profile-icon:hover{ transform: scale(1.1); }
+.profile-icon img{ width:36px; height:36px; border-radius:50%; object-fit:cover; }
+
+/* DASHBOARD BUTTON */
+.dashboard-btn{ background:none; padding:0.45rem; width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center; border:none !important; outline:none !important; box-shadow:none !important; transition: transform .18s ease; }
+.dashboard-btn:hover{ transform: scale(1.1); }
+.dash-icon{ width:22px; height:16px; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; }
+.dash-icon div{ height:2.75px; background:white; border-radius:2px; }
+
+/* Dashboard panel */
+.dashboard-panel{
+  position:absolute;
+  right:1rem;
+  top:65px;
+  background:rgba(0,0,0,0.36);
+  border:1px solid rgba(255,255,255,0.08);
+  padding:0.5rem;
+  border-radius:8px;
+  width:220px;
+  backdrop-filter: blur(12px);
+  transform-origin: top right;
+  opacity:0;
+  transform: translateY(-8px) scale(.985);
+  pointer-events:none;
+  transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
+  z-index:30;
+}
+.dashboard-panel.open{ opacity:1; transform: translateY(0) scale(1); pointer-events:auto; }
+.dashboard-panel a{ display:block; color:var(--text); text-decoration:none; padding:0.45rem 0.6rem; border-radius:6px; font-size:0.95rem; transition: background .15s ease, color .15s ease, transform .12s ease; }
+.dashboard-panel a:hover{ background: rgba(255,255,255,0.12); color: var(--accent); transform: translateX(6px); font-weight:600; }
+
+/* Glass panel */
+.glass-panel { background: rgba(0, 0, 0, 0.36); border: 1px solid rgba(255,255,255,0.08); padding: 1rem; border-radius: 10px; backdrop-filter: blur(10px); margin-bottom: 1rem; color: var(--text); }
+
+main{ flex:1; padding:1.25rem; max-width:1200px; width:100%; margin:0 auto; z-index:5; }
+
+/* PORT CARDS */
+.port-card{ border:1px solid rgba(255,255,255,0.12); padding:1rem; border-radius:10px; margin-bottom:1rem; color:var(--text); transition: transform .22s ease, box-shadow .22s ease; display:flex; flex-direction:column; align-items:center; width:fit-content; background: none; }
+#portContainer{ margin-top:1.25rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; justify-content:center; }
+.port-card-link{ display:block; text-decoration:none; color:var(--text); outline:none; }
+.port-card img{ width:200px; border-radius:15px; margin-bottom:0.5rem; display:block; object-fit:cover; transition: transform .2s ease; }
+.port-card img:hover{ transform: scale(1.1); }
+.port-card h2{ text-align:center; margin:0; padding:0.35rem 0 0; font-size:1.05rem; transition: color .12s ease; color:var(--text); }
+.port-card h2:hover{ color:var(--accent); }
+
+/* SETTINGS BUTTONS */
+.bg-button-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.bg-button { background: rgba(255, 255, 255, 0.1); color: white; padding: 8px 15px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; transition: background 0.2s, transform 0.1s; font-size: 0.9rem; backdrop-filter: blur(5px); }
+.bg-button:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
+.bg-button.active { background: var(--accent); border-color: var(--accent); font-weight: bold; }
+
+/* PROFILE MODAL (replaced content) */
+#profileModal {
   display: none;
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(4px);
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.8);
   justify-content: center;
   align-items: center;
-  z-index: 9999;
 }
-
-#profileEditor {
-  background: #222;
-  padding: 25px;
-  width: 380px;
-  border-radius: 16px;
+#profileModalContent {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 20px;
+  border-radius: 12px;
+  width: 420px;
   text-align: center;
-  box-shadow: 0 0 25px rgba(0,0,0,0.4);
-  animation: pop .2s ease;
+  backdrop-filter: blur(15px);
 }
-
-@keyframes pop {
-  from { transform: scale(.8); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-
-#profilePreview {
+#profileModalContent img.profile-large {
   width: 140px;
   height: 140px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #444;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
-
-input[type="file"],
-input[type="text"] {
-  color: white;
-  margin-top: 15px;
-}
-
-input[type="text"] {
+#profileModalContent input[type="text"] {
   padding: 10px;
   width: 80%;
   border-radius: 6px;
   border: none;
-  background: #333;
+  margin-bottom: 12px;
   font-size: 16px;
+  background: rgba(255,255,255,0.03);
+  color: white;
 }
 
-/* Buttons */
-button {
-  padding: 10px 18px;
-  margin: 6px;
-  font-size: 15px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  transition: .15s;
-}
+/* Crop UI inside modal */
+#cropContainer { display:none; margin-top:10px; }
+#cropPreview { max-width:100%; border-radius:8px; }
 
-.save-btn { background: #ff4444; color: white; }
-.save-btn:hover { background: #ff6666; transform: scale(1.05); }
+/* Buttons styling inside modal */
+.modal-btn { padding: 10px 14px; margin: 6px; border-radius:8px; cursor:pointer; border:none; font-weight:600; }
+.save-btn { background: #ff4444; color:white; }
+.save-btn:hover{ background:#ff6666; transform:scale(1.03); }
+.remove-btn { background:#444; color:white; }
+.remove-btn:hover{ background:#666; transform:scale(1.03); }
+.cancel-btn { background:#777; color:white; }
+.cancel-btn:hover{ background:#999; transform:scale(1.03); }
 
-.remove-btn { background: #444; color: white; }
-.remove-btn:hover { background: #666; transform: scale(1.05); }
+/* FOOTER */
+hr{ border:0; border-top:1px solid rgba(255,255,255,0.12); margin:1rem 0; }
+footer{ padding:1rem; display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; text-align:center; }
+footer a{ color:white; text-decoration:none; transition: color .2s ease, transform .2s ease, text-shadow .2s ease; }
+footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8px rgba(255,0,0,0.55); }
 
-.return-btn { background: #ff0000; color: white; }
-.return-btn:hover { background: #ff3333; transform: scale(1.05); }
-
-/* Cropper preview */
-#cropContainer {
-  display: none;
-  margin-top: 10px;
-}
-
-#cropPreview {
-  max-width: 100%;
-  border-radius: 12px;
+@media (max-width:600px){
+  nav{ display:none; }
+  main{ padding:1rem; }
+  #portContainer{ grid-template-columns:1fr; }
 }
 </style>
 </head>
+<body id="pageBody">
 
-<body>
-
-<!-- ===========================
-     HEADER
-=========================== -->
-<header>
-  <h1>Dashboard</h1>
-
-  <!-- profile icon -->
-  <img id="profileImage" class="profile-icon"
-       src="system/images/profile.png">
-</header>
-
-<!-- ===========================
-     MAIN CONTENT
-=========================== -->
-<div id="mainContent">
-  <h2>Welcome</h2>
-  <p>This is a placeholder dashboard area.<br>
-     Replace with your games, tiles, cards, widgets, etc.</p>
-</div>
-
-<!-- ===========================
-     PROFILE EDITOR POPUP
-=========================== -->
-<div id="profileEditorOverlay">
-  <div id="profileEditor">
-
-    <h2>Edit Profile</h2>
-
-    <img id="profilePreview" src="system/images/profile.png">
-
-    <input type="file" id="profilePicInput" accept="image/*"><br>
-    <button id="removePicBtn" class="remove-btn">Remove Picture</button>
-
-    <!-- cropping -->
-    <div id="cropContainer">
-      <img id="cropPreview">
-      <div>
-        <button id="cropConfirm">Crop</button>
-        <button id="cropCancel">Cancel</button>
-      </div>
+<div id="loadingOverlay">
+  <div class="loading-info">
+    <div class="loading-text">Loading...</div>
+    <div id="loadingPercent" class="loading-percentage">0%</div>
+    <div class="loading-bar-container">
+      <div id="progressBar" class="loading-bar"></div>
     </div>
-
-    <br><br>
-
-    <input type="text" id="usernameInput" placeholder="Enter username">
-
-    <br><br>
-
-    <button id="saveProfileBtn" class="save-btn">Save</button>
-    <button id="closeProfileBtn" class="return-btn">Close</button>
   </div>
 </div>
 
-<!-- ===========================
-     SCRIPT
-=========================== -->
+<header>
+  <div class="header-left">
+    <div class="brand">
+      <img src="webgL.png" alt="Site Logo">
+    </div>
+
+    <nav>
+      <a href="#" id="homeLink">Home</a>
+      <a href="#">About</a>
+      <a href="#" id="settingsLink">Settings</a>
+      <a href="#">Contact</a>
+    </nav>
+  </div>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <input type="text" id="liveSearch" placeholder="Search ports...">
+      <img src="search.png" class="icon" alt="search">
+    </div>
+
+    <div class="profile-icon" id="profileIcon" title="Open profile">
+      <img id="profileImage" src="profile.png" alt="profile">
+    </div>
+
+    <button id="dashBtn" class="dashboard-btn">
+      <span class="dash-icon"><div></div><div></div><div></div></span>
+    </button>
+  </div>
+</header>
+
+<main id="mainContent">
+  <div id="portContainer"></div>
+</main>
+
+<div id="dashboardPanel" class="dashboard-panel">
+  <p>pages</p>
+  <a href="https://bguhm.github.io/music-player.html">Music Player</a>
+  <a href="system/pages/settings-themes.html">Themes</a>
+  <a href="system/pages/credits.html">Credits</a>
+  <p>dev tools</p>
+  <a href="#">Console</a>
+  <a href="#">Inspector</a>
+</div>
+
+<hr>
+<footer>
+  <a href="#">discord</a>
+  <a href="#">suggestions & bug fixes</a>
+  <a href="#">version: v0.1</a>
+  <a href="#">other projects</a>
+</footer>
+
+<!-- ===== PROFILE MODAL (NEW, merged) ===== -->
+<div id="profileModal" aria-hidden="true">
+  <div id="profileModalContent" role="dialog" aria-modal="true">
+    <h3>Edit Profile</h3>
+
+    <img id="profileLarge" class="profile-large" src="profile.png" alt="Profile preview">
+
+    <div>
+      <input type="file" id="profilePicInput" accept="image/*" />
+    </div>
+
+    <div id="cropContainer">
+      <img id="cropPreview" alt="Crop preview" />
+      <div style="margin-top:8px;">
+        <button class="modal-btn save-btn" id="cropConfirm">Crop</button>
+        <button class="modal-btn cancel-btn" id="cropCancel">Cancel</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <button class="modal-btn remove-btn" id="removePicBtn">Remove picture</button>
+    </div>
+
+    <div style="margin-top:12px;">
+      <input type="text" id="usernameInput" placeholder="Enter nickname" />
+    </div>
+
+    <div style="margin-top:14px;">
+      <button class="modal-btn save-btn" id="saveProfileBtn">Save changes</button>
+      <button class="modal-btn cancel-btn" id="closeProfileBtn">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const defaultPic = "system/images/profile.png";
+// --- GLOBAL ELEMENTS & DATA ---
+const pageBody = document.getElementById('pageBody');
+const loadingOverlay = document.getElementById('loadingOverlay');
+const progressBar = document.getElementById('progressBar');
+const loadingPercent = document.getElementById('loadingPercent');
+const mainContent = document.getElementById('mainContent');
+const portContainer = document.getElementById('portContainer');
+const profileIcon = document.getElementById('profileIcon');
+const profileImageElement = document.getElementById('profileImage');
 
-/* Elements */
-const profileImage = document.getElementById("profileImage");
-const mainContent = document.getElementById("mainContent");
+const homeLink = document.getElementById('homeLink');
+const settingsLink = document.getElementById('settingsLink');
 
-const overlay = document.getElementById("profileEditorOverlay");
-const preview = document.getElementById("profilePreview");
-const fileInput = document.getElementById("profilePicInput");
-const removeBtn = document.getElementById("removePicBtn");
-const usernameInput = document.getElementById("usernameInput");
-const saveBtn = document.getElementById("saveProfileBtn");
-const closeBtn = document.getElementById("closeProfileBtn");
+let allPorts = [];
+let loadingInterval;
 
-const cropContainer = document.getElementById("cropContainer");
-const cropPreview = document.getElementById("cropPreview");
-const cropConfirm = document.getElementById("cropConfirm");
-const cropCancel = document.getElementById("cropCancel");
+/* ---------- Loading screen helpers ---------- */
+function updateProgress(percent) {
+  const safePercent = Math.min(100, Math.max(0, percent));
+  progressBar.style.width = `${safePercent}%`;
+  loadingPercent.textContent = `${Math.round(safePercent)}%`;
+}
+function completeLoading() {
+  updateProgress(100);
+  setTimeout(() => loadingOverlay.classList.add('hidden'), 400);
+}
+function simulatePreload() {
+  let progress = 0;
+  updateProgress(30);
+  loadingInterval = setInterval(() => {
+    if (progress >= 90) { clearInterval(loadingInterval); return; }
+    progress += Math.random() * 5 + 2;
+    updateProgress(progress);
+  }, 150);
+}
+simulatePreload();
+
+/* ---------- Port rendering ---------- */
+function renderPorts(list){
+  portContainer.innerHTML = '';
+  list.forEach(item => {
+    const a = document.createElement('a');
+    a.className = 'port-card-link';
+    a.href = item.link;
+    const card = document.createElement('div');
+    card.className = 'port-card';
+    const img = document.createElement('img');
+    img.src = item.image;
+    const h2 = document.createElement('h2');
+    h2.textContent = item.title;
+    card.appendChild(img);
+    card.appendChild(h2);
+    a.appendChild(card);
+    portContainer.appendChild(a);
+  });
+}
+
+/* Fetch ports (unchanged) */
+fetch('ports.json').then(r=>r.json()).then(data=>{
+  allPorts = data;
+  renderPorts(allPorts);
+  clearInterval(loadingInterval);
+  completeLoading();
+}).catch(error => {
+  console.error("Error fetching ports.json:", error);
+  clearInterval(loadingInterval);
+  completeLoading();
+});
+
+/* ---------- Settings page logic (unchanged) ---------- */
+function renderSettingsPage() {
+  mainContent.innerHTML = `
+    <div id="settingsPanel" class="glass-panel">
+      <h2>⚙️ Settings</h2>
+      <p>Background Image Selection (Images must be in the same folder as these files: graduation.png, checkerboard.png, creepybg.png, sillybg.png)</p>
+      <div class="bg-button-container">
+        <button class="bg-button" data-bg="background">Default</button>
+        <button class="bg-button" data-bg="graduation">Graduation</button>
+        <button class="bg-button" data-bg="checkerboard">Checkerboard</button>
+        <button class="bg-button" data-bg="creepybg">Creepy BG</button>
+        <button class="bg-button" data-bg="sillybg">Silly BG</button>
+      </div>
+    </div>
+  `;
+  document.querySelectorAll('.bg-button').forEach(button => {
+    button.addEventListener('click', function() {
+      const bgClass = 'bg-' + this.dataset.bg;
+      pageBody.className = pageBody.className.split(' ').filter(c => !c.startsWith('bg-')).join(' ');
+      if (this.dataset.bg !== 'background') pageBody.classList.add(bgClass);
+      document.querySelectorAll('.bg-button').forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+}
+
+/* ---------- Dashboard open/close ---------- */
+const dashBtn = document.getElementById('dashBtn');
+const dashPanel = document.getElementById('dashboardPanel');
+dashBtn.addEventListener('click', () => dashPanel.classList.toggle('open'));
+document.addEventListener('click', e => {
+  if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) dashPanel.classList.remove('open');
+});
+
+/* ---------- Live search ---------- */
+const searchInput = document.getElementById('liveSearch');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase();
+  const filtered = allPorts.filter(p => p.title.toLowerCase().includes(q));
+  renderPorts(filtered);
+});
+
+/* ---------- Home & Settings links ---------- */
+homeLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  mainContent.innerHTML = '<div id="portContainer"></div>';
+  renderPorts(allPorts);
+});
+settingsLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  renderSettingsPage();
+});
+
+/* ========== PROFILE EDITOR (new merged modal logic) ========== */
+const defaultPic = 'system/images/profile.png'; // prefer local asset if available
+const profileModal = document.getElementById('profileModal');
+const profileLarge = document.getElementById('profileLarge');
+const profilePicInput = document.getElementById('profilePicInput');
+const cropContainer = document.getElementById('cropContainer');
+const cropPreview = document.getElementById('cropPreview');
+const cropConfirm = document.getElementById('cropConfirm');
+const cropCancel = document.getElementById('cropCancel');
+const removePicBtn = document.getElementById('removePicBtn');
+const usernameInput = document.getElementById('usernameInput');
+const saveProfileBtn = document.getElementById('saveProfileBtn');
+const closeProfileBtn = document.getElementById('closeProfileBtn');
 
 let cropper = null;
 let croppedImageData = null;
 
-/* ===========================
-   Load saved profile data
-=========================== */
-window.addEventListener("DOMContentLoaded", () => {
-  const savedPic = localStorage.getItem("profilePic");
-  const savedName = localStorage.getItem("nickname");
+/* Load saved profile info on startup */
+window.addEventListener('DOMContentLoaded', () => {
+  const savedPic = localStorage.getItem('profilePic');
+  const savedName = localStorage.getItem('nickname');
 
-  profileImage.src = savedPic || defaultPic;
-  preview.src = savedPic || defaultPic;
-  usernameInput.value = savedName || "";
+  profileImageElement.src = savedPic || 'profile.png';
+  profileLarge.src = savedPic || ( (savedPic===null) ? 'profile.png' : savedPic );
+  usernameInput.value = savedName || '';
 });
 
-/* ===========================
-   Open editor
-=========================== */
-profileImage.addEventListener("click", () => {
-  overlay.style.display = "flex";
+/* Open modal when clicking profile icon */
+profileIcon.addEventListener('click', () => {
+  // hide main content (user requested games hide)
+  mainContent.style.display = 'none';
+  profileModal.style.display = 'flex';
+  profileModal.setAttribute('aria-hidden', 'false');
 });
 
-/* ===========================
-   Remove picture
-=========================== */
-removeBtn.addEventListener("click", () => {
-  preview.src = defaultPic;
-  localStorage.setItem("profilePic", defaultPic);
+/* Close helper */
+function closeProfileModal() {
+  profileModal.style.display = 'none';
+  profileModal.setAttribute('aria-hidden', 'true');
+  mainContent.style.display = 'block';
+
+  // cleanup cropper if still active
+  if (cropper) { cropper.destroy(); cropper = null; }
+  cropContainer.style.display = 'none';
+  profilePicInput.value = '';
+}
+
+/* close button */
+closeProfileBtn.addEventListener('click', () => closeProfileModal());
+
+/* Remove picture - sets to default and persists */
+removePicBtn.addEventListener('click', () => {
+  profileLarge.src = defaultPic;
+  localStorage.setItem('profilePic', defaultPic);
+  profileImageElement.src = defaultPic;
 });
 
-/* ===========================
-   File → Cropper
-=========================== */
-fileInput.addEventListener("change", e => {
+/* Handle new file selection -> initialize cropper */
+profilePicInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = ev => {
-    cropContainer.style.display = "block";
+    cropContainer.style.display = 'block';
     cropPreview.src = ev.target.result;
 
+    // destroy previous cropper if present
     if (cropper) cropper.destroy();
     cropper = new Cropper(cropPreview, {
       aspectRatio: 1,
       viewMode: 1,
-      dragMode: "move",
-      background: false
+      dragMode: 'move',
+      background: false,
+      cropBoxResizable: true
     });
   };
   reader.readAsDataURL(file);
 });
 
 /* Confirm crop */
-cropConfirm.addEventListener("click", () => {
+cropConfirm.addEventListener('click', () => {
+  if (!cropper) return;
   const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
-  croppedImageData = canvas.toDataURL("image/png");
-  preview.src = croppedImageData;
-
-  cropContainer.style.display = "none";
+  croppedImageData = canvas.toDataURL('image/png');
+  profileLarge.src = croppedImageData;
+  // collapse crop UI
   cropper.destroy();
   cropper = null;
+  cropContainer.style.display = 'none';
+  profilePicInput.value = '';
 });
 
 /* Cancel crop */
-cropCancel.addEventListener("click", () => {
-  cropContainer.style.display = "none";
-  if (cropper) cropper.destroy();
-  cropper = null;
-  fileInput.value = "";
+cropCancel.addEventListener('click', () => {
+  if (cropper) { cropper.destroy(); cropper = null; }
+  cropContainer.style.display = 'none';
+  profilePicInput.value = '';
 });
 
-/* ===========================
-   Save profile
-=========================== */
-saveBtn.addEventListener("click", () => {
-  const username = usernameInput.value.trim();
-  if (username) {
-    localStorage.setItem("nickname", username);
+/* Save profile - name + image to localStorage, update header icon */
+saveProfileBtn.addEventListener('click', () => {
+  const name = usernameInput.value.trim();
+  if (name) localStorage.setItem('nickname', name);
+
+  const finalImage = croppedImageData || profileLarge.src || defaultPic;
+  localStorage.setItem('profilePic', finalImage);
+  profileImageElement.src = finalImage;
+
+  // reset temp crop data
+  croppedImageData = null;
+
+  closeProfileModal();
+});
+
+/* When clicking outside modal content close (optional) */
+profileModal.addEventListener('click', (e) => {
+  if (e.target === profileModal) {
+    closeProfileModal();
   }
-
-  const finalImg = croppedImageData || preview.src;
-  localStorage.setItem("profilePic", finalImg);
-  profileImage.src = finalImg;
-
-  overlay.style.display = "none";
 });
 
-/* ===========================
-   Close editor
-=========================== */
-closeBtn.addEventListener("click", () => {
-  overlay.style.display = "none";
-});
+/* Remove/replace older simple uploader logic if present - nothing to do as we've replaced it here */
+
+/* --- end profile modal logic --- */
 </script>
-
 </body>
 </html>

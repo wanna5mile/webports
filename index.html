@@ -247,7 +247,7 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
   #portContainer{ grid-template-columns:1fr; }
 }
 
-  /* THOUGHT-BUBBLE WELCOME MESSAGE */
+/* THOUGHT-BUBBLE WELCOME MESSAGE */
 #welcomeMessage {
   display: inline-block;
   background: rgba(0,0,0,0.75);
@@ -257,22 +257,21 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
   border-radius: 20px;
   position: relative;
   max-width: 80%;
-  width: fit-content;    /* NEW */
-  white-space: normal;   /* NEW — allows wrapping */
-  word-wrap: break-word; /* NEW — forces long words to wrap */
+  width: fit-content;
+  white-space: normal;
+  word-wrap: break-word;
   font-size: 1.1rem;
   line-height: 1.4;
-  margin: 20px;
-  text-shadow: none;
+  margin: 20px 0 20px 10px;
+  vertical-align: middle;      /* NEW — aligns with speaker */
 }
 
-
-/* bubble tail */
+/* bubble tail (lowered slightly) */
 #welcomeMessage::after {
   content: "";
   position: absolute;
-  bottom: -12px;
-  left: 35px;
+  bottom: -18px;               /* LOWERED */
+  left: 45px;
   width: 22px;
   height: 22px;
   background: rgba(0,0,0,0.75);
@@ -282,21 +281,19 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
 #welcomeMessage::before {
   content: "";
   position: absolute;
-  bottom: -25px;
-  left: 18px;
+  bottom: -32px;               /* LOWERED */
+  left: 25px;
   width: 14px;
   height: 14px;
   background: rgba(0,0,0,0.75);
   border-radius: 50%;
 }
 
-  /* Small circle speaker icon next to thought bubble */
+/* Speaker next to the bubble */
 #thoughtSpeaker {
-  position: relative;
-  width: 55px;
-  height: 55px;
-  margin-left: 20px;
-  margin-top: 10px;
+  display: inline-block;       /* NEW — aligns horizontally */
+  vertical-align: middle;      /* NEW */
+  margin: 20px 10px 0 20px;
 }
 
 #thoughtSpeaker img {
@@ -304,11 +301,10 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
   height: 55px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(255,255,255,0.35);
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(6px);
+  border: none !important;     /* REMOVED BORDER */
+  background: none !important; /* removes dark ring */
+  backdrop-filter: none !important;
 }
-
 </style>
 </head>
 <body id="pageBody">

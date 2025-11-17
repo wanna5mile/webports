@@ -1,0 +1,4 @@
+{
+  "message": "Welcome {username} to version v{version}! Explore web-ports and customize your layout in the settings.",
+  "version": "0.1"
+}

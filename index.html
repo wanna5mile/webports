@@ -409,7 +409,6 @@ footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8
     </div>
   </div>
 </div>
-
 <script>
 // --- GLOBAL ELEMENTS & DATA ---
 const pageBody = document.getElementById('pageBody');
@@ -468,7 +467,7 @@ function renderPorts(list){
   });
 }
 
-/* Fetch ports (unchanged) */
+/* Fetch ports */
 fetch('ports.json').then(r=>r.json()).then(data=>{
   allPorts = data;
   renderPorts(allPorts);
@@ -480,7 +479,7 @@ fetch('ports.json').then(r=>r.json()).then(data=>{
   completeLoading();
 });
 
-/* ---------- Settings page logic (unchanged) ---------- */
+/* ---------- Settings page logic ---------- */
 function renderSettingsPage() {
   mainContent.innerHTML = `
     <div id="settingsPanel" class="glass-panel">
@@ -533,8 +532,8 @@ settingsLink.addEventListener('click', (e) => {
   renderSettingsPage();
 });
 
-/* ========== PROFILE EDITOR (new merged modal logic) ========== */
-const defaultPic = 'system/images/profile.png'; // prefer local asset if available
+/* ========== PROFILE EDITOR ========== */
+const defaultPic = 'system/images/profile.png';
 const profileModal = document.getElementById('profileModal');
 const profileLarge = document.getElementById('profileLarge');
 const profilePicInput = document.getElementById('profilePicInput');
@@ -550,47 +549,45 @@ const closeProfileBtn = document.getElementById('closeProfileBtn');
 let cropper = null;
 let croppedImageData = null;
 
-/* Load saved profile info on startup */
+/* Load saved profile info */
 window.addEventListener('DOMContentLoaded', () => {
   const savedPic = localStorage.getItem('profilePic');
   const savedName = localStorage.getItem('nickname');
 
   profileImageElement.src = savedPic || 'profile.png';
-  profileLarge.src = savedPic || ( (savedPic===null) ? 'profile.png' : savedPic );
+  profileLarge.src = savedPic || 'profile.png';
   usernameInput.value = savedName || '';
 });
 
-/* Open modal when clicking profile icon */
+/* Open modal */
 profileIcon.addEventListener('click', () => {
-  // hide main content (user requested games hide)
   mainContent.style.display = 'none';
   profileModal.style.display = 'flex';
   profileModal.setAttribute('aria-hidden', 'false');
 });
 
-/* Close helper */
+/* Close modal */
 function closeProfileModal() {
   profileModal.style.display = 'none';
   profileModal.setAttribute('aria-hidden', 'true');
   mainContent.style.display = 'block';
-
-  // cleanup cropper if still active
   if (cropper) { cropper.destroy(); cropper = null; }
   cropContainer.style.display = 'none';
   profilePicInput.value = '';
 }
-
-/* close button */
-closeProfileBtn.addEventListener('click', () => closeProfileModal());
-
-/* Remove picture - sets to default and persists */
-removePicBtn.addEventListener('click', () => {
-  profileLarge.src = defaultPic;
-  localStorage.setItem('profilePic', defaultPic);
-  profileImageElement.src = defaultPic;
+closeProfileBtn.addEventListener('click', closeProfileModal);
+profileModal.addEventListener('click', (e) => {
+  if (e.target === profileModal) closeProfileModal();
 });
 
-/* Handle new file selection -> initialize cropper */
+/* Remove picture */
+removePicBtn.addEventListener('click', () => {
+  profileLarge.src = defaultPic;
+  profileImageElement.src = defaultPic;
+  localStorage.setItem('profilePic', defaultPic);
+});
+
+/* Handle new file selection */
 profilePicInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -598,8 +595,6 @@ profilePicInput.addEventListener('change', (e) => {
   reader.onload = ev => {
     cropContainer.style.display = 'block';
     cropPreview.src = ev.target.result;
-
-    // destroy previous cropper if present
     if (cropper) cropper.destroy();
     cropper = new Cropper(cropPreview, {
       aspectRatio: 1,
@@ -618,7 +613,6 @@ cropConfirm.addEventListener('click', () => {
   const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
   croppedImageData = canvas.toDataURL('image/png');
   profileLarge.src = croppedImageData;
-  // collapse crop UI
   cropper.destroy();
   cropper = null;
   cropContainer.style.display = 'none';
@@ -627,47 +621,31 @@ cropConfirm.addEventListener('click', () => {
 
 /* Cancel crop */
 cropCancel.addEventListener('click', () => {
-  if (cropper) { cropper.destroy(); cropper = null; }
+  if (cropper) cropper.destroy();
+  cropper = null;
   cropContainer.style.display = 'none';
   profilePicInput.value = '';
 });
 
-/* Save profile - name + image to localStorage, update header icon */
+/* Save profile */
 saveProfileBtn.addEventListener('click', () => {
   const name = usernameInput.value.trim();
   if (name) localStorage.setItem('nickname', name);
-
   const finalImage = croppedImageData || profileLarge.src || defaultPic;
   localStorage.setItem('profilePic', finalImage);
   profileImageElement.src = finalImage;
-
-  // reset temp crop data
   croppedImageData = null;
-
   closeProfileModal();
-});
-
-/* When clicking outside modal content close (optional) */
-profileModal.addEventListener('click', (e) => {
-  if (e.target === profileModal) {
-    closeProfileModal();
-  }
 });
 
 /* ---------- WELCOME MESSAGE LOADER ---------- */
 const welcomeEl = document.getElementById("welcomeMessage");
-
-// Load username + versioned message
 function updateWelcomeMessage() {
   const username = localStorage.getItem("nickname") || "User";
-  
   fetch("site-info.json")
     .then(r => r.json())
     .then(info => {
-      const msg = info.message
-        .replace("{username}", username)
-        .replace("{version}", info.version);
-
+      const msg = info.message.replace("{username}", username).replace("{version}", info.version);
       welcomeEl.textContent = msg;
     })
     .catch(err => {
@@ -675,15 +653,9 @@ function updateWelcomeMessage() {
       welcomeEl.textContent = `Welcome ${username}!`;
     });
 }
-
-// Run on startup
 window.addEventListener("DOMContentLoaded", updateWelcomeMessage);
-
-// Re-run when profile is saved
-saveProfileBtn.addEventListener("click", () => {
-  setTimeout(updateWelcomeMessage, 150);
-});
-
+saveProfileBtn.addEventListener("click", () => setTimeout(updateWelcomeMessage, 150));
 </script>
+
 </body>
 </html>

@@ -23,14 +23,22 @@ body{
   display:flex;
   flex-direction:column;
   min-height:100vh;
-  background-image: url("background.png");
+  /* Use CSS variable for background image control */
+  background-image: var(--page-background, url("background.png")); 
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center 0%;
   background-color: black;
 }
 
-/* --- NEW LOADING SCREEN STYLES --- */
+/* --- BACKGROUND IMAGE CONTROL CLASSES --- */
+.bg-graduation { --page-background: url("graduation.png"); }
+.bg-checkerboard { --page-background: url("checkerboard.png"); }
+.bg-creepybg { --page-background: url("creepybg.png"); }
+.bg-sillybg { --page-background: url("sillybg.png"); }
+
+
+/* --- LOADING SCREEN STYLES (MODIFIED) --- */
 
 #loadingOverlay {
   position: fixed;
@@ -38,17 +46,16 @@ body{
   left: 0;
   width: 100%;
   height: 100%;
-  /* Match the body background properties for a seamless transition/look */
-  background-image: url("loadingbg.png");
+  background-image: var(--page-background, url("loadingbg.png"));
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center 0%;
   background-color: black;
   
-  z-index: 9999; /* Ensure it's on top of all other content */
-  display: flex; /* Use flexbox to position the info block */
-  align-items: flex-end; /* Align to the bottom */
-  padding: 20px; /* Space from the bottom/left edges */
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
 
   opacity: 1;
   visibility: visible;
@@ -58,14 +65,13 @@ body{
 #loadingOverlay.hidden {
   opacity: 0;
   visibility: hidden;
-  pointer-events: none; /* Allows clicks to pass through once hidden */
+  pointer-events: none;
 }
 
 .loading-info {
-  /* Position the loading bar and text elements */
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Space between text and bar */
+  gap: 8px;
   align-items: flex-start;
   color: var(--text);
 }
@@ -79,24 +85,26 @@ body{
 .loading-percentage {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent); /* Use your accent color */
+  color: var(--text); /* Changed to white text */
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
 }
 
 .loading-bar-container {
-  width: 250px; /* Set a fixed width for the bar */
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  width: 250px;
+  height: 10px; /* Slightly increased height for better visibility */
+  background: rgba(0, 0, 0, 0.3); /* Darker background for contrast */
+  border: 1px solid white; /* NEW: White border */
+  border-radius: 5px; /* NEW: Rounded border to fit */
   overflow: hidden;
+  padding: 1px; /* Padding inside for the border effect */
 }
 
 .loading-bar {
   height: 100%;
-  width: 0%; /* Initial width */
-  background: var(--accent); /* Progress color */
-  border-radius: 4px;
-  transition: width 0.3s ease; /* Smooth animation for progress */
+  width: 0%;
+  background: white; /* NEW: White fill */
+  border-radius: 3px;
+  transition: width 0.3s ease;
 }
 
 /* --- END LOADING SCREEN STYLES --- */
@@ -107,7 +115,7 @@ header{
   border-bottom:1px solid rgba(255,255,255,0.12);
   display:flex;
   align-items:center;
-  justify-content:space-between; /* brand left, search/profile right */
+  justify-content:space-between;
   position:relative;
   z-index:20;
   gap:1rem;
@@ -183,6 +191,13 @@ nav a:hover{
   width:30px;
   opacity:0.8;
   pointer-events:none;
+  /* NEW: Hover effect for search icon */
+  transition: transform .2s ease; 
+}
+
+/* NEW: Search Icon Hover */
+.search-wrap:hover .search-box .icon {
+    transform: translateY(-50%) scale(1.2);
 }
 
 .profile-icon{
@@ -285,6 +300,17 @@ nav a:hover{
   font-weight:600;
 }
 
+/* NEW: Glassy style for main content */
+.glass-panel {
+    background: rgba(0, 0, 0, 0.36);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1rem;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
 main{
   flex:1;
   padding:1.25rem;
@@ -357,6 +383,61 @@ main{
   color:var(--accent);
 }
 
+/* SETTINGS BUTTONS */
+.bg-button-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.bg-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 8px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    font-size: 0.9rem;
+    backdrop-filter: blur(5px);
+}
+
+.bg-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+.bg-button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: bold;
+}
+
+/* PROFILE MODAL STYLES (Simple for demo) */
+#profileModal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+#profileModalContent {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    backdrop-filter: blur(15px);
+}
+
 /* FOOTER */
 hr{
   border:0;
@@ -397,7 +478,7 @@ footer span{
 }
 </style>
 </head>
-<body>
+<body id="pageBody">
 
 <div id="loadingOverlay">
   <div class="loading-info">
@@ -415,8 +496,9 @@ footer span{
     </div>
 
     <nav>
-      <a href="#">Home</a>
+      <a href="#" id="homeLink">Home</a>
       <a href="#">About</a>
+      <a href="#" id="settingsLink">Settings</a>
       <a href="#">Contact</a>
     </nav>
   </div>
@@ -427,8 +509,8 @@ footer span{
       <img src="search.png" class="icon" alt="search">
     </div>
 
-    <div class="profile-icon">
-      <img src="profile.png" alt="profile">
+    <div class="profile-icon" id="profileIcon">
+      <img id="profileImage" src="profile.png" alt="profile">
     </div>
 
     <button id="dashBtn" class="dashboard-btn">
@@ -437,7 +519,7 @@ footer span{
   </div>
 </header>
 
-<main>
+<main id="mainContent">
   <div id="portContainer"></div>
 </main>
 
@@ -459,58 +541,68 @@ footer span{
   <a href="#">other projects</a>
 </footer>
 
+<div id="profileModal">
+    <div id="profileModalContent">
+        <h3>Change Profile Picture</h3>
+        <p>Image Cropping is not available in pure client-side HTML/JS, but you can upload a new image.</p>
+        <input type="file" id="imageUpload" accept="image/png, image/jpeg" style="margin-bottom: 10px;">
+        <br>
+        <button onclick="closeProfileModal()">Close</button>
+    </div>
+</div>
+
 <script>
-// --- 🚀 NEW: LOADING SCREEN LOGIC ---
+// --- GLOBAL ELEMENTS & DATA ---
+const pageBody = document.getElementById('pageBody');
 const loadingOverlay = document.getElementById('loadingOverlay');
 const progressBar = document.getElementById('progressBar');
 const loadingPercent = document.getElementById('loadingPercent');
+const mainContent = document.getElementById('mainContent');
 const portContainer = document.getElementById('portContainer');
+const profileImageElement = document.getElementById('profileImage');
+const profileModal = document.getElementById('profileModal');
+const imageUpload = document.getElementById('imageUpload');
+const homeLink = document.getElementById('homeLink');
+const settingsLink = document.getElementById('settingsLink');
 let allPorts = [];
+let loadingInterval;
 
-// Function to update the loading bar and percentage
+// --- LOADING SCREEN LOGIC ---
+
 function updateProgress(percent) {
-  // Ensure the progress doesn't exceed 100
   const safePercent = Math.min(100, Math.max(0, percent));
   progressBar.style.width = `${safePercent}%`;
   loadingPercent.textContent = `${Math.round(safePercent)}%`;
 }
 
-// Function to handle the final stage (fade out the overlay)
 function completeLoading() {
     updateProgress(100);
-    // Allow a brief moment at 100% before fading out
     setTimeout(() => {
         loadingOverlay.classList.add('hidden');
-    }, 400); // 400ms delay for visual effect
+    }, 400); 
 }
 
-// Function to simulate resource loading (0% to 90%)
 function simulatePreload() {
     let progress = 0;
-    // Quickly jump to 30% and then simulate slower loading
     updateProgress(30);
 
-    const interval = setInterval(() => {
-        // Stop the simulation once we reach the "ready" point (90%)
+    loadingInterval = setInterval(() => {
         if (progress >= 90) {
-            clearInterval(interval);
-            // After pre-loading is done, we wait for the content/data to load
+            clearInterval(loadingInterval);
             return; 
         }
 
-        progress += Math.random() * 5 + 2; // Increment progress by a small random amount
+        progress += Math.random() * 5 + 2;
         updateProgress(progress);
 
-    }, 150); // Update every 150ms
-
-    return interval;
+    }, 150); 
 }
 
 // Start the loading simulation immediately
-let loadingInterval = simulatePreload();
+simulatePreload();
 
 
-// --- EXISTING WEBSITE LOGIC (Modified to integrate with loading) ---
+// --- PORT RENDERING LOGIC ---
 
 function renderPorts(list){
   portContainer.innerHTML = '';
@@ -535,22 +627,109 @@ function renderPorts(list){
   });
 }
 
-// ⚠️ MODIFIED: We run the fetch and then complete the loading process
+// ⚠️ MODIFIED: Fetch and Loading Complete
 fetch('ports.json').then(r=>r.json()).then(data=>{
   allPorts = data;
   renderPorts(allPorts);
-  
-  // 🛑 NEW: Once the critical data is fetched and rendered, stop simulation and complete loading
+  // 🛑 NEW: Once the critical data is fetched, stop simulation and complete loading
   clearInterval(loadingInterval);
   completeLoading(); 
 }).catch(error => {
     console.error("Error fetching ports.json:", error);
-    // Even if there's an error, we should still hide the loading screen
     clearInterval(loadingInterval);
     completeLoading();
 });
 
-// LIVE SEARCH
+
+// --- NEW: SETTINGS PAGE LOGIC ---
+
+function renderSettingsPage() {
+    // Clear main content and add settings structure
+    mainContent.innerHTML = `
+        <div id="settingsPanel" class="glass-panel">
+            <h2>⚙️ Settings</h2>
+            <p>Background Image Selection (Images must be in the same folder as these files: graduation.png, checkerboard.png, creepybg.png, sillybg.png)</p>
+            <div class="bg-button-container">
+                <button class="bg-button" data-bg="background">Default</button>
+                <button class="bg-button" data-bg="graduation">Graduation</button>
+                <button class="bg-button" data-bg="checkerboard">Checkerboard</button>
+                <button class="bg-button" data-bg="creepybg">Creepy BG</button>
+                <button class="bg-button" data-bg="sillybg">Silly BG</button>
+            </div>
+        </div>
+    `;
+
+    // Add event listeners to the new buttons
+    document.querySelectorAll('.bg-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const bgClass = 'bg-' + this.dataset.bg;
+            
+            // Remove all existing background classes
+            pageBody.className = pageBody.className.split(' ').filter(c => !c.startsWith('bg-')).join(' ');
+            
+            // Apply the new background class (if not default)
+            if (this.dataset.bg !== 'background') {
+                pageBody.classList.add(bgClass);
+            }
+            // Simple way to show which button is active
+            document.querySelectorAll('.bg-button').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+}
+
+// --- NEW: PROFILE ICON/MODAL LOGIC ---
+
+function openProfileModal() {
+    profileModal.style.display = 'flex';
+}
+
+function closeProfileModal() {
+    profileModal.style.display = 'none';
+}
+
+// Handles image file selection
+imageUpload.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        // Since we cannot replace "profile.png" file directly (browser security), 
+        // we use a FileReader to display the selected image immediately.
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Update the source of the profile image element
+            profileImageElement.src = e.target.result; 
+            alert('Profile image updated! (Note: This change is temporary and will reset when you reload the page.)');
+            closeProfileModal();
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+
+// --- EVENT LISTENERS ---
+
+// NEW: Show games when Home is clicked
+homeLink.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent default link behavior
+    mainContent.innerHTML = '<div id="portContainer"></div>'; // Re-insert container
+    renderPorts(allPorts); // Render all ports again
+});
+
+// NEW: Show settings page when Settings is clicked
+settingsLink.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent default link behavior
+    renderSettingsPage();
+});
+
+
+// NEW: Hide ports when profile icon is clicked and show modal
+document.getElementById('profileIcon').addEventListener('click', () => {
+    // Hide games/ports by clearing the main content
+    mainContent.innerHTML = '';
+    openProfileModal();
+});
+
+// LIVE SEARCH (UNTOUCHED)
 const searchInput = document.getElementById('liveSearch');
 searchInput.addEventListener('input', () => {
   const q = searchInput.value.toLowerCase();
@@ -558,7 +737,7 @@ searchInput.addEventListener('input', () => {
   renderPorts(filtered);
 });
 
-// DASHBOARD OPEN/CLOSE
+// DASHBOARD OPEN/CLOSE (UNTOUCHED)
 const dashBtn = document.getElementById('dashBtn');
 const dashPanel = document.getElementById('dashboardPanel');
 
@@ -566,9 +745,9 @@ dashBtn.addEventListener('click', () => {
   dashPanel.classList.toggle('open');
 });
 
-// Close on outside click
+// Close on outside click (UNTOUCHED)
 document.addEventListener('click', e => {
-  if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) {
+  if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target) && !profileModal.contains(e.target) && e.target !== profileModal) {
     dashPanel.classList.remove('open');
   }
 });

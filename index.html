@@ -1,338 +1,345 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Web-Ported - WebGL ports</title>
-  <link rel="icon" href="favicon.png" type="image/png">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Web-Ported - WebGL ports</title>
+<link rel="icon" href="favicon.png" type="image/png">
 
-  <style>
-    :root{
-      --bg: #fff;
-      --text: #ffffff;
-      --accent: #ff3b3b;
-      --muted: #fff;
-    }
+<style>
+:root{
+  --bg: #fff;
+  --text: #ffffff;
+  --accent: #ff3b3b;
+  --muted: #fff;
+}
 
-    *{ box-sizing: border-box; }
-    html, body{ height:100%; margin:0; padding:0; }
+*{ box-sizing: border-box; }
+html, body{ height:100%; margin:0; padding:0; }
 
-    body{
-      font-family: Inter, system-ui, sans-serif;
-      color: var(--text);
-      display:flex;
-      flex-direction:column;
-      min-height:100vh;
-      background-image: url("background.png");
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center 0%;
-      background-color: black;
-    }
+body{
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text);
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  background-image: url("background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center 0%;
+  background-color: black;
+}
 
-    header{
-      padding:1rem;
-      border-bottom:1px solid rgba(255,255,255,0.12);
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
-      position:relative;
-      z-index:20;
-      gap:1rem;
-    }
+header{
+  padding:1rem;
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:space-between; /* brand left, search/profile right */
+  position:relative;
+  z-index:20;
+  gap:1rem;
+}
 
-    nav a{
-      text-decoration:none;
-      color:white;
-      margin-left:1rem;
-      font-size:0.95rem;
-      display:inline-block;
-      transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
-    }
+/* Brand + Nav container */
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:2rem;
+}
 
-    nav a:hover{
-      color: var(--accent);
-      transform: scale(1.08);
-      text-shadow: 0 0 8px rgba(255,0,0,0.55);
-    }
+nav a{
+  text-decoration:none;
+  color:white;
+  font-size:0.95rem;
+  display:inline-block;
+  transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
+}
 
-    .brand img{
-      height:40px;
-      width:auto;
-      display:block;
-      user-select:none;
-    }
+nav a:hover{
+  color: var(--accent);
+  transform: scale(1.08);
+  text-shadow: 0 0 8px rgba(255,0,0,0.55);
+}
 
-    /* SEARCH + PROFILE */
-    .search-wrap{
-      display:flex;
-      align-items:center;
-      gap:0.6rem;
-    }
+.brand img{
+  height:40px;
+  width:auto;
+  display:block;
+  user-select:none;
+  transition: transform .2s ease;
+}
 
-    .search-box{
-      position:relative;
-      width:230px;
-    }
+.brand img:hover{
+  transform: scale(1.1);
+}
 
-    .search-box input{
-      width:100%;
-      padding:0.55rem 2.2rem 0.55rem 0.9rem;
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,0.18);
-      background:rgba(0,0,0,0.35);
-      color:white;
-      font-size:0.95rem;
-      outline:none;
-      backdrop-filter: blur(6px);
-      transition: border .15s ease, box-shadow .15s ease;
-    }
+.search-wrap{
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+}
 
-    .search-box input:focus{
-      border-color: var(--accent);
-      box-shadow:0 0 8px rgba(255,0,0,0.4);
-    }
+.search-box{
+  position:relative;
+  width:230px;
+}
 
-    .search-box .icon{
-      position:absolute;
-      right:6px;
-      top:50%;
-      transform:translateY(-50%);
-      width:30px;
-      opacity:0.8;
-      pointer-events:none;
-    }
+.search-box input{
+  width:100%;
+  padding:0.55rem 2.2rem 0.55rem 0.9rem;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(0,0,0,0.35);
+  color:white;
+  font-size:0.95rem;
+  outline:none;
+  backdrop-filter: blur(6px);
+  transition: border .15s ease, box-shadow .15s ease;
+}
 
-    .profile-icon{
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      border:1px solid rgba(255,255,255,0.25);
-      background:rgba(255,255,255,0.1);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      backdrop-filter: blur(6px);
-      cursor:pointer;
-    }
+.search-box input:focus{
+  border-color: var(--accent);
+  box-shadow:0 0 8px rgba(255,0,0,0.4);
+}
 
-    .profile-icon img{
-      width:36px;
-      opacity:1.0;
-    }
+.search-box .icon{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  width:30px;
+  opacity:0.8;
+  pointer-events:none;
+}
 
-    main{
-      flex:1;
-      padding:1.25rem;
-      max-width:1200px;
-      width:100%;
-      margin:0 auto;
-      z-index:5;
-    }
+.profile-icon{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter: blur(6px);
+  cursor:pointer;
+  transition: transform .2s ease;
+}
 
-    /* PORT CARDS */
-    .port-card{
-      border:1px solid rgba(255,255,255,0.12);
-      padding:1rem;
-      border-radius:10px;
-      margin-bottom:1rem;
-      color:var(--text);
-      transition: transform .22s ease, box-shadow .22s ease;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      width:fit-content;
-      background: none;
-    }
+.profile-icon:hover{
+  transform: scale(1.1);
+}
 
-    #portContainer{
-      margin-top:1.25rem;
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap:1rem;
-      justify-content:center;
-    }
+.profile-icon img{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+}
 
-    .port-card-link{
-      display:block;
-      text-decoration:none;
-      color:var(--text);
-      outline:none;
-    }
+/* DASHBOARD BUTTON */
+.dashboard-btn{
+  background:none;
+  padding:0.45rem;
+  width:42px;
+  height:42px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+  transition: transform .18s ease;
+}
 
-    .port-card-link:focus .port-card{ box-shadow:0 6px 18px rgba(0,0,0,0.45); }
+.dashboard-btn:hover{ transform: scale(1.1); }
 
-    .port-card-link:hover .port-card{
-      transform: scale(1.05);
-      box-shadow:none;
-    }
+.dash-icon{
+  width:22px;
+  height:16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  pointer-events:none;
+}
 
-    .port-card img{
-      width:200px;
-      border-radius:15px;
-      margin-bottom:0.5rem;
-      display:block;
-      object-fit:cover;
-    }
+.dash-icon div{
+  height:2.75px;
+  background:white;
+  border-radius:2px;
+}
 
-    .port-card h2{
-      text-align:center;
-      margin:0;
-      padding:0.35rem 0 0;
-      font-size:1.05rem;
-      transition: color .12s ease;
-      color:var(--text);
-    }
+/* Dashboard panel */
+.dashboard-panel{
+  position:absolute;
+  right:1rem;
+  top:65px;
+  background:rgba(0,0,0,0.36);
+  border:1px solid rgba(255,255,255,0.08);
+  padding:0.5rem;
+  border-radius:8px;
+  width:220px;
+  backdrop-filter: blur(12px);
+  transform-origin: top right;
+  opacity:0;
+  transform: translateY(-8px) scale(.985);
+  pointer-events:none;
+  transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
+  z-index:30;
+}
 
-    .port-card h2:hover{
-      color:var(--accent);
-    }
+.dashboard-panel.open{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  pointer-events:auto;
+}
 
-    /* DASHBOARD PANEL */
-    .dashboard-btn{
-      background:none;
-      padding:0.45rem;
-      width:42px;
-      height:42px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border:none !important;
-      outline:none !important;
-      box-shadow:none !important;
-      transition: transform .18s ease;
-    }
+.dashboard-panel a{
+  display:block;
+  color:var(--text);
+  text-decoration:none;
+  padding:0.45rem 0.6rem;
+  border-radius:6px;
+  font-size:0.95rem;
+  transition: background .15s ease, color .15s ease, transform .12s ease;
+}
 
-    .dashboard-btn:hover{ transform: scale(1.1); }
+.dashboard-panel a:hover{
+  background: rgba(255,255,255,0.12);
+  color: var(--accent);
+  transform: translateX(6px);
+  font-weight:600;
+}
 
-    .dash-icon{
-      width:22px;
-      height:16px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      pointer-events:none;
-    }
+main{
+  flex:1;
+  padding:1.25rem;
+  max-width:1200px;
+  width:100%;
+  margin:0 auto;
+  z-index:5;
+}
 
-    .dash-icon div{
-      height:2.75px;
-      background:white;
-      border-radius:2px;
-    }
+/* PORT CARDS */
+.port-card{
+  border:1px solid rgba(255,255,255,0.12);
+  padding:1rem;
+  border-radius:10px;
+  margin-bottom:1rem;
+  color:var(--text);
+  transition: transform .22s ease, box-shadow .22s ease;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:fit-content;
+  background: none;
+}
 
-    .dashboard-panel{
-      position:absolute;
-      right:1rem;
-      top:65px;
-      background:rgba(0,0,0,0.36);
-      border:1px solid rgba(255,255,255,0.08);
-      padding:0.5rem;
-      border-radius:8px;
-      width:220px;
-      backdrop-filter: blur(12px);
-      transform-origin: top right;
-      opacity:0;
-      transform: translateY(-8px) scale(.985);
-      pointer-events:none;
-      transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
-      z-index:30;
-    }
+#portContainer{
+  margin-top:1.25rem;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap:1rem;
+  justify-content:center;
+}
 
-    .dashboard-panel.open{
-      opacity:1;
-      transform: translateY(0) scale(1);
-      pointer-events:auto;
-    }
+.port-card-link{
+  display:block;
+  text-decoration:none;
+  color:var(--text);
+  outline:none;
+}
 
-    .dashboard-panel a{
-      display:block;
-      color:var(--text);
-      text-decoration:none;
-      padding:0.45rem 0.6rem;
-      border-radius:6px;
-      font-size:0.95rem;
-      transition: background .15s ease, color .15s ease, transform .12s ease;
-    }
+.port-card-link:focus .port-card{ box-shadow:0 6px 18px rgba(0,0,0,0.45); }
 
-    .dashboard-panel a:hover{
-      background: rgba(255,255,255,0.12);
-      color: var(--accent);
-      transform: translateX(6px);
-      font-weight:600;
-    }
+.port-card-link:hover .port-card{
+  transform: scale(1.05);
+  box-shadow:none;
+}
 
-    /* FOOTER */
-    hr{
-      border:0;
-      border-top:1px solid rgba(255,255,255,0.12);
-      margin:1rem 0;
-    }
+.port-card img{
+  width:200px;
+  border-radius:15px;
+  margin-bottom:0.5rem;
+  display:block;
+  object-fit:cover;
+  transition: transform .2s ease;
+}
 
-    footer{
-      padding:1rem;
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      gap:1rem;
-      text-align:center;
-    }
+.port-card img:hover{
+  transform: scale(1.1);
+}
 
-    footer a{
-      color:white;
-      text-decoration:none;
-      transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
-    }
+.port-card h2{
+  text-align:center;
+  margin:0;
+  padding:0.35rem 0 0;
+  font-size:1.05rem;
+  transition: color .12s ease;
+  color:var(--text);
+}
 
-    footer a:hover{
-      color: var(--accent);
-      transform: scale(1.05);
-      text-shadow: 0 0 8px rgba(255,0,0,0.55);
-    }
+.port-card h2:hover{
+  color:var(--accent);
+}
 
-    footer span{
-      display:block;
-      margin-top:4px;
-    }
+/* FOOTER */
+hr{
+  border:0;
+  border-top:1px solid rgba(255,255,255,0.12);
+  margin:1rem 0;
+}
 
-    @media (max-width:600px){
-      nav{ display:none; }
-      main{ padding:1rem; }
-      #portContainer{ grid-template-columns:1fr; }
-    }
-    
-  /* Larger search button */
-  #searchBtn{
-    transform: scale(2);
-  }
+footer{
+  padding:1rem;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:1rem;
+  text-align:center;
+}
 
-  /* Make profile PNG fill button */
-  #profileBtn img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-  }
-  .FUCKOFFF{
-    background-color: rgba(0, 0, 0, 0); 
-    width:800px;
-  }
+footer a{
+  color:white;
+  text-decoration:none;
+  transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
+}
+
+footer a:hover{
+  color: var(--accent);
+  transform: scale(1.05);
+  text-shadow: 0 0 8px rgba(255,0,0,0.55);
+}
+
+footer span{
+  display:block;
+  margin-top:4px;
+}
+
+@media (max-width:600px){
+  nav{ display:none; }
+  main{ padding:1rem; }
+  #portContainer{ grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">
-    <img src="webgL.png" alt="Site Logo">
+  <div class="header-left">
+    <div class="brand">
+      <img src="webgL.png" alt="Site Logo">
+    </div>
+
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
   </div>
 
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">About</a>
-    <a href="#">Contact</a>
-  </nav>
-  
-<div class="FUCKOFFF"></div>
-  
   <div class="search-wrap">
     <div class="search-box">
       <input type="text" id="liveSearch" placeholder="Search ports...">
@@ -342,11 +349,11 @@
     <div class="profile-icon">
       <img src="profile.png" alt="profile">
     </div>
-  </div>
 
-  <button id="dashBtn" class="dashboard-btn">
-    <span class="dash-icon"><div></div><div></div><div></div></span>
-  </button>
+    <button id="dashBtn" class="dashboard-btn">
+      <span class="dash-icon"><div></div><div></div><div></div></span>
+    </button>
+  </div>
 </header>
 
 <main>
@@ -365,12 +372,12 @@
 </div>
 
 <hr>
-  <footer>
-    <a href="#">discord</a>
-    <a href="#">suggestions & bug fixes</a>
-    <a href="#">version: v0.1</a>
-    <a href="#">other projects</a>
-  </footer>
+<footer>
+  <a href="#">discord</a>
+  <a href="#">suggestions & bug fixes</a>
+  <a href="#">version: v0.1</a>
+  <a href="#">other projects</a>
+</footer>
 
 <script>
 const portContainer = document.getElementById('portContainer');
@@ -411,6 +418,7 @@ searchInput.addEventListener('input', () => {
   const filtered = allPorts.filter(p => p.title.toLowerCase().includes(q));
   renderPorts(filtered);
 });
+
 // DASHBOARD OPEN/CLOSE
 const dashBtn = document.getElementById('dashBtn');
 const dashPanel = document.getElementById('dashboardPanel');
@@ -425,8 +433,6 @@ document.addEventListener('click', e => {
     dashPanel.classList.remove('open');
   }
 });
-
 </script>
-
 </body>
 </html>

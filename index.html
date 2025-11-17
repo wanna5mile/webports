@@ -632,9 +632,36 @@ profileModal.addEventListener('click', (e) => {
   }
 });
 
-/* Remove/replace older simple uploader logic if present - nothing to do as we've replaced it here */
+/* ---------- WELCOME MESSAGE LOADER ---------- */
+const welcomeEl = document.getElementById("welcomeMessage");
 
-/* --- end profile modal logic --- */
+// Load username + versioned message
+function updateWelcomeMessage() {
+  const username = localStorage.getItem("nickname") || "User";
+  
+  fetch("site-info.json")
+    .then(r => r.json())
+    .then(info => {
+      const msg = info.message
+        .replace("{username}", username)
+        .replace("{version}", info.version);
+
+      welcomeEl.textContent = msg;
+    })
+    .catch(err => {
+      console.error("Failed to load site-info.json:", err);
+      welcomeEl.textContent = `Welcome ${username}!`;
+    });
+}
+
+// Run on startup
+window.addEventListener("DOMContentLoaded", updateWelcomeMessage);
+
+// Re-run when profile is saved
+saveProfileBtn.addEventListener("click", () => {
+  setTimeout(updateWelcomeMessage, 150);
+});
+
 </script>
 </body>
 </html>

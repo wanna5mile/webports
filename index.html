@@ -6,6 +6,31 @@
 <title>Web-Ported - WebGL ports</title>
 <link rel="icon" href="favicon.png" type="image/png">
 
+  <!-- Discord Widget -->
+  <script async defer src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3"></script>
+  <script>
+    window.addEventListener("load", () => {
+      if (typeof Crate !== "undefined") {
+        new Crate({
+          server: '1273329263923302430',
+          channel: '1329289920845713471'
+        });
+      }
+    });
+  </script>
+
+  <!-- Social Meta -->
+  <meta property="og:title" content="WannaSmile" />
+  <meta property="og:description" content="Welcome to WannaSmile — a library full of content! Enjoy it in your free time." />
+  <meta property="og:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
+  <meta property="og:url" content="https://vvannasmile.github.io/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="WannaSmile.github.io" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="WannaSmile" />
+  <meta name="twitter:description" content="A fun, content-filled library to make you smile." />
+  <meta name="twitter:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
+  
 <style>
 :root{
   --bg: #fff;

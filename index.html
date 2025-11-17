@@ -127,7 +127,250 @@
 
     nav a{ text-decoration:none; color:white; margin-left:1rem; }
 
-    /* Existing CSS remains same */
+    :root{
+      --bg: #fff;
+      --text: #ffffff;
+      --accent: #ff3b3b;
+      --muted: #fff;
+    }
+
+    *{ box-sizing: border-box; }
+    html, body{ height:100%; margin:0; padding:0; }
+
+    body{
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      background-image: url("background.png");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center 0%;
+      background-color: black;
+    }
+
+    header{
+      padding:1rem;
+      border-bottom:1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      position:relative;
+      z-index:20;
+    }
+
+    nav a{
+      text-decoration:none;
+      color:white;
+      margin-left:1rem;
+      font-size:0.95rem;
+      display:inline-block;
+      transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
+    }
+
+    nav a:hover{
+      color: var(--accent);
+      transform: scale(1.08);
+      text-shadow: 0 0 8px rgba(255,0,0,0.55);
+    }
+
+    .brand img{
+      height:40px;
+      width:auto;
+      display:block;
+      user-select:none;
+    }
+
+    main{
+      flex:1;
+      padding:1.25rem;
+      max-width:1200px;
+      width:100%;
+      margin:0 auto;
+      z-index:5;
+    }
+
+    /* PORT CARDS */
+    .port-card{
+      border:1px solid rgba(255,255,255,0.12);
+      padding:1rem;
+      border-radius:10px;
+      margin-bottom:1rem;
+      color:var(--text);
+      transition: transform .22s ease, box-shadow .22s ease;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      width:fit-content;
+      background: none;
+    }
+
+    /* Grid */
+    #portContainer{
+      margin-top:1.25rem;
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:1rem;
+      justify-content:center;
+    }
+
+    .port-card-link{
+      display:block;
+      text-decoration:none;
+      color:var(--text);
+      outline: none;
+    }
+
+    .port-card-link:focus .port-card { box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
+
+    /* Removed glow/shadow on hover */
+    .port-card-link:hover .port-card{
+      transform: scale(1.05);
+      box-shadow: none;
+    }
+
+    .port-card img{
+      width:200px;
+      border-radius:15px;
+      margin-bottom:0.5rem;
+      display:block;
+      object-fit:cover;
+    }
+
+    .port-card h2{
+      text-align:center;
+      margin:0;
+      padding:0.35rem 0 0;
+      font-size:1.05rem;
+      transition: color .12s ease, transform .12s ease;
+      color:var(--text);
+    }
+
+    .port-card h2:hover{
+      color: var(--accent);
+      transform:none;
+    }
+
+    /* DASHBOARD PANEL */
+    .dashboard-btn{
+      background:none;
+      padding:0.45rem;
+      width:42px;
+      height:42px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:none !important;
+      outline:none !important;
+      box-shadow:none !important;
+      transition: transform .18s ease;
+    }
+
+    /* Grow dashboard button when hovered */
+    .dashboard-btn:hover{
+      transform: scale(1.1);
+    }
+
+    .dash-icon{
+      width:22px;
+      height:16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      pointer-events:none;
+    }
+
+    .dash-icon div{
+      height:2.75px;
+      background:white;
+      border-radius:2px;
+    }
+
+    .dashboard-panel{
+      position:absolute;
+      right:1rem;
+      top:65px;
+      background:rgba(0,0,0,0.36);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:0.5rem;
+      border-radius:8px;
+      width:220px;
+      backdrop-filter: blur(12px);
+      transform-origin: top right;
+      opacity:0;
+      transform: translateY(-8px) scale(.985);
+      pointer-events:none;
+      transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
+      z-index:30;
+    }
+
+    .dashboard-panel.open{
+      opacity:1;
+      transform: translateY(0) scale(1);
+      pointer-events:auto;
+    }
+
+    .dashboard-panel a{
+      display:block;
+      color:var(--text);
+      text-decoration:none;
+      padding:0.45rem 0.6rem;
+      border-radius:6px;
+      font-size:0.95rem;
+      transition: background .15s ease, color .15s ease, transform .12s ease;
+    }
+
+    .dashboard-panel a:focus { outline:2px solid rgba(255,255,255,0.06); }
+
+    .dashboard-panel a:hover{
+      background: rgba(255,255,255,0.12);
+      color: var(--accent);
+      transform: translateX(6px);
+      font-weight:600;
+    }
+
+    /* Footer */
+    hr{
+      border:0;
+      border-top:1px solid rgba(255,255,255,0.12);
+      margin:1rem 0;
+    }
+
+    footer{
+      padding:1rem;
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:1rem;
+      text-align:center;
+      backdrop-filter:none;
+    }
+
+    footer a{
+      color:white;
+      text-decoration:none;
+      transition: color .2s ease, transform .2s ease, text-shadow .2s ease;
+    }
+
+    /* footer text smaller on hover */
+    footer a:hover{
+      color: var(--accent);
+      transform: scale(1.05);
+      text-shadow: 0 0 8px rgba(255,0,0,0.55);
+    }
+
+    footer span{
+      display:block;
+      margin-top:4px;
+    }
+
+    @media (max-width:600px){
+      nav{ display:none; }
+      main{ padding:1rem; }
+      #portContainer{ grid-template-columns: 1fr; }
+    }    
   </style>
 </head>
 <body>

@@ -1,598 +1,418 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Web-Ported - WebGL ports</title>
-<link rel="icon" href="favicon.png" type="image/png">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Web-Ported - WebGL ports</title>
 
-<!-- Discord Widget -->
-<script async defer src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3"></script>
-<script>
-  window.addEventListener("load", () => {
-    if (typeof Crate !== "undefined") {
-      new Crate({
-        server: '1439699996676063357',
-        channel: '1439699997758066774'
-      });
+  <style>
+    :root{
+      --bg: #000000;
+      --text: #ffffff;
+      --accent: #ff3b3b;
+      --muted: #bdbdbd;
     }
-  });
-</script>
 
-<!-- Social Meta -->
-<meta property="og:title" content="WannaSmile" />
-<meta property="og:description" content="Welcome to WannaSmile — a library full of content! Enjoy it in your free time." />
-<meta property="og:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
-<meta property="og:url" content="https://vvannasmile.github.io/" />
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="WannaSmile.github.io" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="WannaSmile" />
-<meta name="twitter:description" content="A fun, content-filled library to make you smile." />
-<meta name="twitter:image" content="https://www.yourwebsite.com/path/to/your/preview-image.jpg" />
+    *{ box-sizing: border-box; }
+    html, body{ height:100%; margin:0; padding:0; }
 
-<!-- Cropper.js CDN (confirmed) -->
-<link href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" rel="stylesheet">
-<script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
+    body{
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
 
-<style>
-:root{
-  --bg: #fff;
-  --text: #ffffff;
-  --accent: #ff3b3b;
-  --muted: #fff;
-}
+      /* background: image controlled by JS (background-position updated) */
+      background-image: url("background.png");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center 0%;
+      background-color: black;
+    }
 
-*{ box-sizing: border-box; }
-html, body{ height:100%; margin:0; padding:0; }
+    header{
+      padding:1rem;
+      border-bottom:1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      position:relative;
+      z-index:20;
+    }
 
-body{
-  font-family: Inter, system-ui, sans-serif;
-  color: var(--text);
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
-  /* Use CSS variable for background image control */
-  background-image: var(--page-background, url("background.png")); 
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center 0%;
-  background-color: black;
-}
+    .brand img{
+      height:40px;
+      width:auto;
+      display:block;
+      user-select:none;
+    }
 
-/* --- BACKGROUND IMAGE CONTROL CLASSES --- */
-.bg-graduation { --page-background: url("graduation.png"); }
-.bg-checkerboard { --page-background: url("checkerboard.png"); }
-.bg-creepybg { --page-background: url("creepybg.png"); }
-.bg-sillybg { --page-background: url("sillybg.png"); }
+    nav a{
+      text-decoration:none;
+      color:var(--muted);
+      margin-left:1rem;
+      font-size:0.95rem;
+    }
 
-/* --- LOADING SCREEN STYLES (MODIFIED) --- */
-#loadingOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: var(--page-background, url("loadingbg.png"));
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center 0%;
-  background-color: black;
-  z-index: 9999;
-  display: flex;
-  align-items: flex-end;
-  padding: 20px;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.5s ease-out, visibility 0.5s;
-}
-#loadingOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-.loading-info { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; color: var(--text); }
-.loading-text { font-size: 1.25rem; font-weight: 600; text-shadow: 0 0 5px rgba(0,0,0,0.7); }
-.loading-percentage { font-size: 1.5rem; font-weight: 700; color: var(--text); text-shadow: 0 0 5px rgba(0,0,0,0.7); }
-.loading-bar-container { width: 250px; height: 10px; background: rgba(0,0,0,0.3); border: 1px solid white; border-radius: 5px; overflow: hidden; padding:1px; }
-.loading-bar { height:100%; width:0%; background:white; border-radius:3px; transition: width .3s ease; }
+    main{
+      flex:1;
+      padding:1.25rem;
+      max-width:1000px;
+      width:100%;
+      margin:0 auto;
+      z-index:5;
+    }
 
-/* header */
-header{
-  padding:1rem;
-  border-bottom:1px solid rgba(255,255,255,0.12);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:relative;
-  z-index:20;
-  gap:1rem;
-}
-.header-left{ display:flex; align-items:center; gap:2rem; }
-nav a{ text-decoration:none; color:white; font-size:0.95rem; display:inline-block; transition: color .2s, transform .2s, text-shadow .2s; }
-nav a:hover{ color: var(--accent); transform: scale(1.08); text-shadow: 0 0 8px rgba(255,0,0,0.55); }
-.brand img{ height:40px; width:auto; display:block; user-select:none; transition: transform .2s ease; }
-.brand img:hover{ transform: scale(1.1); }
+    /* GLASS CARDS — stronger blur, more transparent */
+    .card, .port-card{
+      border:1px solid rgba(255,255,255,0.12);
+      padding:1rem;
+      border-radius:10px;
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      background: rgba(0,0,0,0.30); /* more transparent */
+      margin-bottom:1rem;
+      color:var(--text);
+      transition: background .18s ease, transform .12s ease;
+    }
 
-.search-wrap{ display:flex; align-items:center; gap:0.6rem; }
-.search-box{ position:relative; width:230px; }
-.search-box input{
-  width:100%;
-  padding:0.55rem 2.2rem 0.55rem 0.9rem;
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,0.18);
-  background:rgba(0,0,0,0.35);
-  color:white;
-  font-size:0.95rem;
-  outline:none;
-  backdrop-filter: blur(6px);
-  transition: border .15s ease, box-shadow .15s ease;
-}
-.search-box input:focus{ border-color: var(--accent); box-shadow:0 0 8px rgba(255,0,0,0.4); }
-.search-box .icon{ position:absolute; right:6px; top:50%; transform:translateY(-50%); width:30px; opacity:0.8; pointer-events:none; transition: transform .2s ease; }
-.search-wrap:hover .search-box .icon { transform: translateY(-50%) scale(1.2); }
+    /* when a child title hovered we make the card slightly more opaque */
+    .port-card.title-hover {
+      background: rgba(0,0,0,0.45);
+      transform: translateY(-3px);
+    }
 
-.profile-icon{ width:36px; height:36px; border-radius:50%; border:1px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; backdrop-filter: blur(6px); cursor:pointer; transition: transform .2s ease; }
-.profile-icon:hover{ transform: scale(1.1); }
-.profile-icon img{ width:36px; height:36px; border-radius:50%; object-fit:cover; }
+    footer{
+      padding:0.75rem 1rem;
+      border-top:1px solid rgba(255,255,255,0.12);
+      text-align:center;
+      color:var(--muted);
+      background: rgba(0,0,0,0.30);
+      backdrop-filter: blur(10px);
+    }
 
-/* DASHBOARD BUTTON */
-.dashboard-btn{ background:none; padding:0.45rem; width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center; border:none !important; outline:none !important; box-shadow:none !important; transition: transform .18s ease; }
-.dashboard-btn:hover{ transform: scale(1.1); }
-.dash-icon{ width:22px; height:16px; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; }
-.dash-icon div{ height:2.75px; background:white; border-radius:2px; }
+    /* SQUARE hamburger button */
+    .dashboard-btn{
+      background:none;
+      border:1px solid rgba(255,255,255,0.9);
+      padding:0.45rem;
+      width:42px;
+      height:42px;
+      border-radius:6px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: background .12s ease;
+    }
+    .dashboard-btn:focus { outline:2px solid rgba(255,255,255,0.12); }
 
-/* Dashboard panel */
-.dashboard-panel{
-  position:absolute;
-  right:1rem;
-  top:65px;
-  background:rgba(0,0,0,0.36);
-  border:1px solid rgba(255,255,255,0.08);
-  padding:0.5rem;
-  border-radius:8px;
-  width:220px;
-  backdrop-filter: blur(12px);
-  transform-origin: top right;
-  opacity:0;
-  transform: translateY(-8px) scale(.985);
-  pointer-events:none;
-  transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
-  z-index:30;
-}
-.dashboard-panel.open{ opacity:1; transform: translateY(0) scale(1); pointer-events:auto; }
-.dashboard-panel a{ display:block; color:var(--text); text-decoration:none; padding:0.45rem 0.6rem; border-radius:6px; font-size:0.95rem; transition: background .15s ease, color .15s ease, transform .12s ease; }
-.dashboard-panel a:hover{ background: rgba(255,255,255,0.12); color: var(--accent); transform: translateX(6px); font-weight:600; }
+    .dashboard-btn:hover{ background: rgba(255,255,255,0.03); }
 
-/* Glass panel */
-.glass-panel { background: rgba(0, 0, 0, 0.36); border: 1px solid rgba(255,255,255,0.08); padding: 1rem; border-radius: 10px; backdrop-filter: blur(10px); margin-bottom: 1rem; color: var(--text); }
+    .dash-icon{
+      width:22px;
+      height:16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      pointer-events:none;
+    }
 
-main{ flex:1; padding:1.25rem; max-width:1200px; width:100%; margin:0 auto; z-index:5; }
+    .dash-icon div{
+      height:2.75px;
+      background:white; /* white icon requested */
+      border-radius:2px;
+    }
 
-/* PORT CARDS */
-.port-card{ border:1px solid rgba(255,255,255,0.12); padding:1rem; border-radius:10px; margin-bottom:1rem; color:var(--text); transition: transform .22s ease, box-shadow .22s ease; display:flex; flex-direction:column; align-items:center; width:fit-content; background: none; }
-#portContainer{ margin-top:1.25rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; justify-content:center; }
-.port-card-link{ display:block; text-decoration:none; color:var(--text); outline:none; }
-.port-card img{ width:200px; border-radius:15px; margin-bottom:0.5rem; display:block; object-fit:cover; transition: transform .2s ease; }
-.port-card img:hover{ transform: scale(1.1); }
-.port-card h2{ text-align:center; margin:0; padding:0.35rem 0 0; font-size:1.05rem; transition: color .12s ease; color:var(--text); }
-.port-card h2:hover{ color:var(--accent); }
+    /* Animated glass dropdown (class-based) */
+    .dashboard-panel{
+      position:absolute;
+      right:1rem;
+      top:65px;
+      background:rgba(0,0,0,0.36);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:0.5rem;
+      border-radius:8px;
+      width:220px;
+      backdrop-filter: blur(12px);
+      transform-origin: top right;
+      opacity:0;
+      transform: translateY(-8px) scale(.985);
+      pointer-events:none;
+      transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
+      z-index:30;
+    }
 
-/* SETTINGS BUTTONS */
-.bg-button-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-.bg-button { background: rgba(255, 255, 255, 0.1); color: white; padding: 8px 15px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; transition: background 0.2s, transform 0.1s; font-size: 0.9rem; backdrop-filter: blur(5px); }
-.bg-button:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
-.bg-button.active { background: var(--accent); border-color: var(--accent); font-weight: bold; }
+    .dashboard-panel.open{
+      opacity:1;
+      transform: translateY(0) scale(1);
+      pointer-events:auto;
+    }
 
-/* PROFILE MODAL (replaced content) */
-#profileModal {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.8);
-  justify-content: center;
-  align-items: center;
-}
-#profileModalContent {
-  background: rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 20px;
-  border-radius: 12px;
-  width: 420px;
-  text-align: center;
-  backdrop-filter: blur(15px);
-}
-#profileModalContent img.profile-large {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #444;
-  margin-bottom: 12px;
-}
-#profileModalContent input[type="text"] {
-  padding: 10px;
-  width: 80%;
-  border-radius: 6px;
-  border: none;
-  margin-bottom: 12px;
-  font-size: 16px;
-  background: rgba(255,255,255,0.03);
-  color: white;
-}
+    .dashboard-panel a{
+      display:block;
+      color:var(--text);
+      text-decoration:none;
+      padding:0.45rem 0.6rem;
+      border-radius:6px;
+      font-size:0.95rem;
+      transition: background .15s ease, color .15s ease, transform .12s ease;
+    }
 
-/* Crop UI inside modal */
-#cropContainer { display:none; margin-top:10px; }
-#cropPreview { max-width:100%; border-radius:8px; }
+    .dashboard-panel a:focus { outline:2px solid rgba(255,255,255,0.06); }
 
-/* Buttons styling inside modal */
-.modal-btn { padding: 10px 14px; margin: 6px; border-radius:8px; cursor:pointer; border:none; font-weight:600; }
-.save-btn { background: #ff4444; color:white; }
-.save-btn:hover{ background:#ff6666; transform:scale(1.03); }
-.remove-btn { background:#444; color:white; }
-.remove-btn:hover{ background:#666; transform:scale(1.03); }
-.cancel-btn { background:#777; color:white; }
-.cancel-btn:hover{ background:#999; transform:scale(1.03); }
+    .dashboard-panel a:hover{
+      background: rgba(255,255,255,0.12); /* less transparent */
+      color: var(--accent); /* red */
+      transform: translateX(6px);
+      font-weight:600;
+    }
 
-/* FOOTER */
-hr{ border:0; border-top:1px solid rgba(255,255,255,0.12); margin:1rem 0; }
-footer{ padding:1rem; display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; text-align:center; }
-footer a{ color:white; text-decoration:none; transition: color .2s ease, transform .2s ease, text-shadow .2s ease; }
-footer a:hover{ color: var(--accent); transform: scale(1.05); text-shadow: 0 0 8px rgba(255,0,0,0.55); }
+    /* Grid */
+    #portContainer{
+      margin-top:1.25rem;
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+      gap:1rem;
+    }
 
-@media (max-width:600px){
-  nav{ display:none; }
-  main{ padding:1rem; }
-  #portContainer{ grid-template-columns:1fr; }
-}
-</style>
+    /* CLICKABLE anchor blocks */
+    .port-card-link{
+      display:block;
+      text-decoration:none;
+      color:var(--text);
+      outline: none;
+    }
+    .port-card-link:focus .port-card { box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
+
+    .port-card img{
+      width:100%;
+      border-radius:8px;
+      margin-bottom:0.5rem;
+      display:block;
+      object-fit:cover;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .port-card h2{
+      text-align:center;
+      margin:0;
+      padding:0.35rem 0 0;
+      font-size:1.05rem;
+      transition: color .12s ease, transform .12s ease;
+      color:var(--text);
+    }
+
+    /* Title hover interaction (turn red, bigger) */
+    .port-card h2:hover{
+      color: var(--accent);
+      transform: scale(1.06);
+    }
+
+    /* pointer cursor on hover for anchors */
+    .port-card-link:hover { cursor:pointer; }
+
+    /* small responsive nicety */
+    @media (max-width:600px){
+      nav{ display:none; }
+      main{ padding:1rem; }
+      #portContainer{ grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-<body id="pageBody">
+<body>
 
-<div id="loadingOverlay">
-  <div class="loading-info">
-    <div class="loading-text">Loading...</div>
-    <div id="loadingPercent" class="loading-percentage">0%</div>
-    <div class="loading-bar-container">
-      <div id="progressBar" class="loading-bar"></div>
-    </div>
-  </div>
-</div>
-
-<header>
-  <div class="header-left">
+  <header>
     <div class="brand">
       <img src="webgL.png" alt="Site Logo">
     </div>
 
     <nav>
-      <a href="#" id="homeLink">Home</a>
+      <a href="#">Home</a>
       <a href="#">About</a>
-      <a href="#" id="settingsLink">Settings</a>
       <a href="#">Contact</a>
     </nav>
-  </div>
 
-  <div class="search-wrap">
-    <div class="search-box">
-      <input type="text" id="liveSearch" placeholder="Search ports...">
-      <img src="search.png" class="icon" alt="search">
-    </div>
-
-    <div class="profile-icon" id="profileIcon" title="Open profile">
-      <img id="profileImage" src="profile.png" alt="profile">
-    </div>
-
-    <button id="dashBtn" class="dashboard-btn">
-      <span class="dash-icon"><div></div><div></div><div></div></span>
+    <!-- White 3-dash hamburger (square) -->
+    <button id="dashBtn" class="dashboard-btn" aria-controls="dashPanel" aria-expanded="false" title="Open dashboard">
+      <span class="dash-icon" aria-hidden="true">
+        <div></div><div></div><div></div>
+      </span>
     </button>
+  </header>
+
+  <div id="dashPanel" class="dashboard-panel" role="menu" aria-hidden="true">
+    <a href="#" role="menuitem">Settings</a>
+    <a href="#" role="menuitem">Account</a>
+    <a href="#" role="menuitem">Tools</a>
+    <a href="#" role="menuitem">Dev Options</a>
   </div>
-</header>
 
-<main id="mainContent">
-  <div id="portContainer"></div>
-</main>
+  <main>
+    <section class="card">
+      <h1>Welcome to Web-Ported!</h1>
+      <p>webports downloaded from gn-math, credits to genizy &lt;3</p>
+    </section>
 
-<div id="dashboardPanel" class="dashboard-panel">
-  <p>pages</p>
-  <a href="https://bguhm.github.io/music-player.html">Music Player</a>
-  <a href="system/pages/settings-themes.html">Themes</a>
-  <a href="system/pages/credits.html">Credits</a>
-  <p>dev tools</p>
-  <a href="#">Console</a>
-  <a href="#">Inspector</a>
-</div>
+    <div id="portContainer" aria-live="polite"></div>
+  </main>
 
-<hr>
-<footer>
-  <a href="#">discord</a>
-  <a href="#">suggestions & bug fixes</a>
-  <a href="#">version: v0.1</a>
-  <a href="#">other projects</a>
-</footer>
+  <footer>
+    © <span id="year"></span> My Site
+  </footer>
 
-<!-- ===== PROFILE MODAL (NEW, merged) ===== -->
-<div id="profileModal" aria-hidden="true">
-  <div id="profileModalContent" role="dialog" aria-modal="true">
-    <h3>Edit Profile</h3>
+  <script>
+    // safe DOM-ready wrapper
+    (function () {
+      // set year
+      const yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    <img id="profileLarge" class="profile-large" src="profile.png" alt="Profile preview">
+      /* ---------------------------
+         Dropdown logic (robust)
+      ----------------------------*/
+      const dashBtn = document.getElementById('dashBtn');
+      const dashPanel = document.getElementById('dashPanel');
 
-    <div>
-      <input type="file" id="profilePicInput" accept="image/*" />
-    </div>
+      function openPanel() {
+        dashPanel.classList.add('open');
+        dashPanel.setAttribute('aria-hidden', 'false');
+        dashBtn.setAttribute('aria-expanded', 'true');
+      }
+      function closePanel() {
+        dashPanel.classList.remove('open');
+        dashPanel.setAttribute('aria-hidden', 'true');
+        dashBtn.setAttribute('aria-expanded', 'false');
+      }
+      function togglePanel() {
+        dashPanel.classList.contains('open') ? closePanel() : openPanel();
+      }
 
-    <div id="cropContainer">
-      <img id="cropPreview" alt="Crop preview" />
-      <div style="margin-top:8px;">
-        <button class="modal-btn save-btn" id="cropConfirm">Crop</button>
-        <button class="modal-btn cancel-btn" id="cropCancel">Cancel</button>
-      </div>
-    </div>
+      if (dashBtn && dashPanel) {
+        dashBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          togglePanel();
+        });
 
-    <div style="margin-top:12px;">
-      <button class="modal-btn remove-btn" id="removePicBtn">Remove picture</button>
-    </div>
+        // close when clicking outside
+        document.addEventListener('click', function (e) {
+          if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) {
+            closePanel();
+          }
+        });
 
-    <div style="margin-top:12px;">
-      <input type="text" id="usernameInput" placeholder="Enter nickname" />
-    </div>
+        // keyboard: Escape closes
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') closePanel();
+        });
+      }
 
-    <div style="margin-top:14px;">
-      <button class="modal-btn save-btn" id="saveProfileBtn">Save changes</button>
-      <button class="modal-btn cancel-btn" id="closeProfileBtn">Close</button>
-    </div>
-  </div>
-</div>
+      /* ---------------------------
+         Background scroll (resilient)
+         - slowFactor controls how much the background moves relative to page scroll
+         - clamp prevents image leaving the viewport
+      ----------------------------*/
+      function updateBackgroundScroll() {
+        try {
+          const scrollTop = window.scrollY || window.pageYOffset || 0;
+          const docHeight = Math.max(document.body.scrollHeight - window.innerHeight, 0);
 
-<script>
-// --- GLOBAL ELEMENTS & DATA ---
-const pageBody = document.getElementById('pageBody');
-const loadingOverlay = document.getElementById('loadingOverlay');
-const progressBar = document.getElementById('progressBar');
-const loadingPercent = document.getElementById('loadingPercent');
-const mainContent = document.getElementById('mainContent');
-const portContainer = document.getElementById('portContainer');
-const profileIcon = document.getElementById('profileIcon');
-const profileImageElement = document.getElementById('profileImage');
+          // if page has no scroll, keep at top
+          let scrollPercent = docHeight > 0 ? (scrollTop / docHeight) : 0;
 
-const homeLink = document.getElementById('homeLink');
-const settingsLink = document.getElementById('settingsLink');
+          // slower movement factor (smaller = slower)
+          const slowFactor = 0.22;
 
-let allPorts = [];
-let loadingInterval;
+          // compute limited percent and clamp between 0 and slowFactor
+          let mapped = Math.min(Math.max(scrollPercent * slowFactor, 0), slowFactor);
 
-/* ---------- Loading screen helpers ---------- */
-function updateProgress(percent) {
-  const safePercent = Math.min(100, Math.max(0, percent));
-  progressBar.style.width = `${safePercent}%`;
-  loadingPercent.textContent = `${Math.round(safePercent)}%`;
-}
-function completeLoading() {
-  updateProgress(100);
-  setTimeout(() => loadingOverlay.classList.add('hidden'), 400);
-}
-function simulatePreload() {
-  let progress = 0;
-  updateProgress(30);
-  loadingInterval = setInterval(() => {
-    if (progress >= 90) { clearInterval(loadingInterval); return; }
-    progress += Math.random() * 5 + 2;
-    updateProgress(progress);
-  }, 150);
-}
-simulatePreload();
+          // convert to percentage for background-position
+          const yPercent = mapped / slowFactor * (slowFactor * 100); // yields 0..(slowFactor*100)
+          // simpler: just use mapped*100
+          document.body.style.backgroundPosition = 'center ' + (mapped * 100) + '%';
+        } catch (err) {
+          // don't break page if something odd happens
+          console.error('bg scroll error', err);
+        }
+      }
 
-/* ---------- Port rendering ---------- */
-function renderPorts(list){
-  portContainer.innerHTML = '';
-  list.forEach(item => {
-    const a = document.createElement('a');
-    a.className = 'port-card-link';
-    a.href = item.link;
-    const card = document.createElement('div');
-    card.className = 'port-card';
-    const img = document.createElement('img');
-    img.src = item.image;
-    const h2 = document.createElement('h2');
-    h2.textContent = item.title;
-    card.appendChild(img);
-    card.appendChild(h2);
-    a.appendChild(card);
-    portContainer.appendChild(a);
-  });
-}
+      window.addEventListener('scroll', updateBackgroundScroll, { passive: true });
+      window.addEventListener('resize', updateBackgroundScroll);
+      // initial
+      updateBackgroundScroll();
 
-/* Fetch ports (unchanged) */
-fetch('ports.json').then(r=>r.json()).then(data=>{
-  allPorts = data;
-  renderPorts(allPorts);
-  clearInterval(loadingInterval);
-  completeLoading();
-}).catch(error => {
-  console.error("Error fetching ports.json:", error);
-  clearInterval(loadingInterval);
-  completeLoading();
-});
+      /* ---------------------------
+         Load ports.json and build cards
+      ----------------------------*/
+      const portContainer = document.getElementById('portContainer');
 
-/* ---------- Settings page logic (unchanged) ---------- */
-function renderSettingsPage() {
-  mainContent.innerHTML = `
-    <div id="settingsPanel" class="glass-panel">
-      <h2>⚙️ Settings</h2>
-      <p>Background Image Selection (Images must be in the same folder as these files: graduation.png, checkerboard.png, creepybg.png, sillybg.png)</p>
-      <div class="bg-button-container">
-        <button class="bg-button" data-bg="background">Default</button>
-        <button class="bg-button" data-bg="graduation">Graduation</button>
-        <button class="bg-button" data-bg="checkerboard">Checkerboard</button>
-        <button class="bg-button" data-bg="creepybg">Creepy BG</button>
-        <button class="bg-button" data-bg="sillybg">Silly BG</button>
-      </div>
-    </div>
-  `;
-  document.querySelectorAll('.bg-button').forEach(button => {
-    button.addEventListener('click', function() {
-      const bgClass = 'bg-' + this.dataset.bg;
-      pageBody.className = pageBody.className.split(' ').filter(c => !c.startsWith('bg-')).join(' ');
-      if (this.dataset.bg !== 'background') pageBody.classList.add(bgClass);
-      document.querySelectorAll('.bg-button').forEach(btn => btn.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
-}
+      function makeCard(item) {
+        // wrapper anchor
+        const a = document.createElement('a');
+        a.className = 'port-card-link';
+        // guard empty link: if empty, link to '#' and don't open new tab
+        a.href = item.link && item.link.trim() ? item.link : '#';
+        if (item.link && item.link.trim()) a.target = '_blank';
+        a.rel = 'noopener noreferrer';
 
-/* ---------- Dashboard open/close ---------- */
-const dashBtn = document.getElementById('dashBtn');
-const dashPanel = document.getElementById('dashboardPanel');
-dashBtn.addEventListener('click', () => dashPanel.classList.toggle('open'));
-document.addEventListener('click', e => {
-  if (!dashPanel.contains(e.target) && !dashBtn.contains(e.target)) dashPanel.classList.remove('open');
-});
+        const card = document.createElement('div');
+        card.className = 'port-card';
 
-/* ---------- Live search ---------- */
-const searchInput = document.getElementById('liveSearch');
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.toLowerCase();
-  const filtered = allPorts.filter(p => p.title.toLowerCase().includes(q));
-  renderPorts(filtered);
-});
+        // image element (use provided image path)
+        const img = document.createElement('img');
+        img.src = item.image || 'icon.png';
+        img.alt = item.title || 'item';
+        img.loading = 'lazy';
 
-/* ---------- Home & Settings links ---------- */
-homeLink.addEventListener('click', (e) => {
-  e.preventDefault();
-  mainContent.innerHTML = '<div id="portContainer"></div>';
-  renderPorts(allPorts);
-});
-settingsLink.addEventListener('click', (e) => {
-  e.preventDefault();
-  renderSettingsPage();
-});
+        const h2 = document.createElement('h2');
+        h2.textContent = item.title || '';
 
-/* ========== PROFILE EDITOR (new merged modal logic) ========== */
-const defaultPic = 'system/images/profile.png'; // prefer local asset if available
-const profileModal = document.getElementById('profileModal');
-const profileLarge = document.getElementById('profileLarge');
-const profilePicInput = document.getElementById('profilePicInput');
-const cropContainer = document.getElementById('cropContainer');
-const cropPreview = document.getElementById('cropPreview');
-const cropConfirm = document.getElementById('cropConfirm');
-const cropCancel = document.getElementById('cropCancel');
-const removePicBtn = document.getElementById('removePicBtn');
-const usernameInput = document.getElementById('usernameInput');
-const saveProfileBtn = document.getElementById('saveProfileBtn');
-const closeProfileBtn = document.getElementById('closeProfileBtn');
+        // hover interactivity: when title hovered, make parent card more opaque
+        h2.addEventListener('mouseenter', () => card.classList.add('title-hover'));
+        h2.addEventListener('mouseleave', () => card.classList.remove('title-hover'));
 
-let cropper = null;
-let croppedImageData = null;
+        card.appendChild(img);
+        card.appendChild(h2);
+        a.appendChild(card);
 
-/* Load saved profile info on startup */
-window.addEventListener('DOMContentLoaded', () => {
-  const savedPic = localStorage.getItem('profilePic');
-  const savedName = localStorage.getItem('nickname');
+        return a;
+      }
 
-  profileImageElement.src = savedPic || 'profile.png';
-  profileLarge.src = savedPic || ( (savedPic===null) ? 'profile.png' : savedPic );
-  usernameInput.value = savedName || '';
-});
+      // fetch with graceful fallback
+      (function loadPorts() {
+        if (!portContainer) return;
+        fetch('ports.json', { cache: 'no-store' })
+          .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            return res.json();
+          })
+          .then(data => {
+            if (!Array.isArray(data)) throw new Error('ports.json is not an array');
+            // clear container
+            portContainer.innerHTML = '';
+            data.forEach(item => {
+              try {
+                const node = makeCard(item);
+                portContainer.appendChild(node);
+              } catch (err) {
+                console.error('card build error', err, item);
+              }
+            });
+          })
+          .catch(err => {
+            console.warn('Failed to load ports.json — showing placeholder:', err);
+            // fallback: show a friendly placeholder card
+            portContainer.innerHTML = `
+              <div class="card">
+                <strong>Could not load ports.json</strong>
+                <p>Check console for details. Place a valid <code>ports.json</code> file in the site root (array of {image,title,link}).</p>
+              </div>
+            `;
+          });
+      })();
 
-/* Open modal when clicking profile icon */
-profileIcon.addEventListener('click', () => {
-  // hide main content (user requested games hide)
-  mainContent.style.display = 'none';
-  profileModal.style.display = 'flex';
-  profileModal.setAttribute('aria-hidden', 'false');
-});
-
-/* Close helper */
-function closeProfileModal() {
-  profileModal.style.display = 'none';
-  profileModal.setAttribute('aria-hidden', 'true');
-  mainContent.style.display = 'block';
-
-  // cleanup cropper if still active
-  if (cropper) { cropper.destroy(); cropper = null; }
-  cropContainer.style.display = 'none';
-  profilePicInput.value = '';
-}
-
-/* close button */
-closeProfileBtn.addEventListener('click', () => closeProfileModal());
-
-/* Remove picture - sets to default and persists */
-removePicBtn.addEventListener('click', () => {
-  profileLarge.src = defaultPic;
-  localStorage.setItem('profilePic', defaultPic);
-  profileImageElement.src = defaultPic;
-});
-
-/* Handle new file selection -> initialize cropper */
-profilePicInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    cropContainer.style.display = 'block';
-    cropPreview.src = ev.target.result;
-
-    // destroy previous cropper if present
-    if (cropper) cropper.destroy();
-    cropper = new Cropper(cropPreview, {
-      aspectRatio: 1,
-      viewMode: 1,
-      dragMode: 'move',
-      background: false,
-      cropBoxResizable: true
-    });
-  };
-  reader.readAsDataURL(file);
-});
-
-/* Confirm crop */
-cropConfirm.addEventListener('click', () => {
-  if (!cropper) return;
-  const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
-  croppedImageData = canvas.toDataURL('image/png');
-  profileLarge.src = croppedImageData;
-  // collapse crop UI
-  cropper.destroy();
-  cropper = null;
-  cropContainer.style.display = 'none';
-  profilePicInput.value = '';
-});
-
-/* Cancel crop */
-cropCancel.addEventListener('click', () => {
-  if (cropper) { cropper.destroy(); cropper = null; }
-  cropContainer.style.display = 'none';
-  profilePicInput.value = '';
-});
-
-/* Save profile - name + image to localStorage, update header icon */
-saveProfileBtn.addEventListener('click', () => {
-  const name = usernameInput.value.trim();
-  if (name) localStorage.setItem('nickname', name);
-
-  const finalImage = croppedImageData || profileLarge.src || defaultPic;
-  localStorage.setItem('profilePic', finalImage);
-  profileImageElement.src = finalImage;
-
-  // reset temp crop data
-  croppedImageData = null;
-
-  closeProfileModal();
-});
-
-/* When clicking outside modal content close (optional) */
-profileModal.addEventListener('click', (e) => {
-  if (e.target === profileModal) {
-    closeProfileModal();
-  }
-});
-
-/* Remove/replace older simple uploader logic if present - nothing to do as we've replaced it here */
-
-/* --- end profile modal logic --- */
-</script>
+    })();
+  </script>
 </body>
 </html>

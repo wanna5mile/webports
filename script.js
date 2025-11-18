@@ -373,6 +373,84 @@ window.addEventListener('DOMContentLoaded', function () {
       });
   }
   updateWelcomeMessage();
+/* -----------------------------------------
+    DYNAMIC BACKGROUND SCALING + SCROLL SPEED
+----------------------------------------- */
+(function () {
+  const body = document.getElementById('pageBody');
+  if (!body) return;
+
+  let bgImg = new Image();
+  let naturalW = 0;
+  let naturalH = 0;
+
+  function getCurrentBG() {
+    const cs = getComputedStyle(body);
+    const bg = cs.backgroundImage;
+    if (!bg || bg === 'none') return null;
+    return bg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+  }
+
+  function applyScaling() {
+    if (!naturalW || !naturalH) return;
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const imgRatio = naturalW / naturalH;
+    const viewRatio = vw / vh;
+
+    // FIRST: scale to fill width
+    let finalW = vw;
+    let finalH = finalW / imgRatio;
+
+    // If that doesn’t cover the height, scale upward using height instead
+    if (finalH < vh) {
+      finalH = vh;
+      finalW = finalH * imgRatio;
+    }
+
+    // Apply CSS so the BG always stays fully covering the viewport
+    body.style.backgroundSize = `${finalW}px ${finalH}px`;
+    body.style.backgroundRepeat = "repeat-y";  
+    body.style.backgroundPosition = "center top";
+  }
+
+  function loadBGAndInit() {
+    const url = getCurrentBG();
+    if (!url) return;
+
+    bgImg.onload = () => {
+      naturalW = bgImg.naturalWidth;
+      naturalH = bgImg.naturalHeight;
+      applyScaling();
+    };
+    bgImg.src = url;
+  }
+
+  // smooth scroll speed scaling
+  let targetScroll = 0;
+  let currentScroll = 0;
+
+  function animateScroll() {
+    currentScroll += (targetScroll - currentScroll) * 0.08;
+    window.scrollTo(0, currentScroll);
+    requestAnimationFrame(animateScroll);
+  }
+  animateScroll();
+
+  window.addEventListener('wheel', e => {
+    // Adjust multiplier to speed up or slow down scroll
+    targetScroll += e.deltaY * 0.45;
+    targetScroll = Math.max(0, Math.min(targetScroll, document.body.scrollHeight));
+  });
+
+  window.addEventListener('resize', applyScaling);
+  loadBGAndInit();
+
+  // Re-apply when user changes background in Settings
+  const observer = new MutationObserver(loadBGAndInit);
+  observer.observe(body, { attributes: true, attributeFilter: ['class', 'style'] });
+})();
 
   /* -------------------------
         DISCORD WIDGET

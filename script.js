@@ -373,8 +373,9 @@ window.addEventListener('DOMContentLoaded', function () {
       });
   }
   updateWelcomeMessage();
-/* -----------------------------------------
-    DYNAMIC BACKGROUND SCALING + SCROLL SPEED
+
+  /* -----------------------------------------
+   SMART BACKGROUND SCALING + ADAPTIVE SPEED
 ----------------------------------------- */
 (function () {
   const body = document.getElementById('pageBody');
@@ -391,30 +392,77 @@ window.addEventListener('DOMContentLoaded', function () {
     return bg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
   }
 
+  /* ---------------------------------------------------
+       SCALE LOGIC THAT NEVER INCREASES HEIGHT UNLESS
+       NECESSARY TO ENSURE IT ALWAYS FITS VIEWPORT
+  --------------------------------------------------- */
   function applyScaling() {
     if (!naturalW || !naturalH) return;
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
+
     const imgRatio = naturalW / naturalH;
     const viewRatio = vw / vh;
 
-    // FIRST: scale to fill width
     let finalW = vw;
     let finalH = finalW / imgRatio;
 
-    // If that doesn’t cover the height, scale upward using height instead
+    // If not tall enough to fill height → increase height ONLY AS MUCH AS NEEDED
     if (finalH < vh) {
       finalH = vh;
       finalW = finalH * imgRatio;
     }
 
-    // Apply CSS so the BG always stays fully covering the viewport
-    body.style.backgroundSize = `${finalW}px ${finalH}px`;
-    body.style.backgroundRepeat = "repeat-y";  
+    // If the BG ends up *smaller than both* dimensions → hide overflow instead of stretching
+    if (naturalW < vw && naturalH < vh) {
+      body.style.backgroundSize = `${naturalW}px ${naturalH}px`;
+      body.style.backgroundRepeat = "no-repeat";
+      body.style.overflow = "hidden";
+    } else {
+      body.style.backgroundSize = `${finalW}px ${finalH}px`;
+      body.style.backgroundRepeat = "repeat-y";
+      body.style.overflow = "visible";
+    }
+
     body.style.backgroundPosition = "center top";
   }
 
+  /* ---------------------------------------------------
+        ADAPTIVE SCROLL SPEED BASED ON IMAGE HEIGHT
+      Speed stays slow when image is short, fast when tall.
+  --------------------------------------------------- */
+  let targetScroll = 0;
+  let currentScroll = 0;
+  let speedFactor = 0.4;  // updated dynamically below
+
+  function recalcScrollSpeed() {
+    if (!naturalH) return;
+
+    const vh = window.innerHeight;
+
+    // Speed ratio: bigger ImageHeight → higher speed
+    const ratio = naturalH / vh;
+
+    // clamp between 0.25 and 1.25 for comfort
+    speedFactor = Math.max(0.25, Math.min(1.25, ratio));
+  }
+
+  function animateScroll() {
+    currentScroll += (targetScroll - currentScroll) * 0.1;
+    window.scrollTo(0, currentScroll);
+    requestAnimationFrame(animateScroll);
+  }
+  animateScroll();
+
+  window.addEventListener('wheel', e => {
+    targetScroll += e.deltaY * speedFactor;
+    targetScroll = Math.max(0, Math.min(targetScroll, document.body.scrollHeight));
+  });
+
+  /* ---------------------------------------------------
+            LOADING THE IMAGE + INITIALIZATION
+  --------------------------------------------------- */
   function loadBGAndInit() {
     const url = getCurrentBG();
     if (!url) return;
@@ -422,34 +470,26 @@ window.addEventListener('DOMContentLoaded', function () {
     bgImg.onload = () => {
       naturalW = bgImg.naturalWidth;
       naturalH = bgImg.naturalHeight;
+
+      recalcScrollSpeed();
       applyScaling();
     };
     bgImg.src = url;
   }
 
-  // smooth scroll speed scaling
-  let targetScroll = 0;
-  let currentScroll = 0;
-
-  function animateScroll() {
-    currentScroll += (targetScroll - currentScroll) * 0.08;
-    window.scrollTo(0, currentScroll);
-    requestAnimationFrame(animateScroll);
-  }
-  animateScroll();
-
-  window.addEventListener('wheel', e => {
-    // Adjust multiplier to speed up or slow down scroll
-    targetScroll += e.deltaY * 0.45;
-    targetScroll = Math.max(0, Math.min(targetScroll, document.body.scrollHeight));
+  window.addEventListener('resize', () => {
+    recalcScrollSpeed();
+    applyScaling();
   });
 
-  window.addEventListener('resize', applyScaling);
   loadBGAndInit();
 
-  // Re-apply when user changes background in Settings
-  const observer = new MutationObserver(loadBGAndInit);
+  // Re-apply when class changes (Settings page background switch)
+  const observer = new MutationObserver(() => {
+    loadBGAndInit();
+  });
   observer.observe(body, { attributes: true, attributeFilter: ['class', 'style'] });
+
 })();
 
   /* -------------------------

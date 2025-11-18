@@ -1,4 +1,4 @@
-// ===== FULL MERGED SCRIPT =====
+// ===== FULL MERGED SCRIPT (UPDATED) =====
 window.addEventListener('DOMContentLoaded', function () {
 
   /* -------------------------
@@ -15,9 +15,11 @@ window.addEventListener('DOMContentLoaded', function () {
   var loadingPercent = document.getElementById('loadingPercent');
 
   function updateProgress(p) {
-    progressBar.style.width = Math.min(100, Math.max(0, p)) + '%';
-    loadingPercent.textContent = Math.round(Math.min(100, Math.max(0, p))) + '%';
+    p = Math.min(100, Math.max(0, p));
+    progressBar.style.width = p + '%';
+    loadingPercent.textContent = Math.round(p) + '%';
   }
+
   function completeLoading() {
     updateProgress(100);
     setTimeout(() => loadingOverlay.classList.add('hidden'), 400);
@@ -37,11 +39,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   function applySavedBackground() {
     var bg = localStorage.getItem('selectedBackground');
-    if (!bg || bg === 'background') {
-      pageBody.className = '';
-    } else {
-      pageBody.className = 'bg-' + bg;
-    }
+    pageBody.className = (!bg || bg === 'background') ? '' : 'bg-' + bg;
   }
   applySavedBackground();
 
@@ -65,7 +63,7 @@ window.addEventListener('DOMContentLoaded', function () {
        DASHBOARD MERGED
   ------------------------- */
   const dashBtn = document.getElementById('dashBtn');
-  const dashPanel = document.getElementById('dashboardPanel'); // unified name
+  const dashPanel = document.getElementById('dashboardPanel');
 
   function openPanel() {
     dashPanel.classList.add('open');
@@ -101,8 +99,17 @@ window.addEventListener('DOMContentLoaded', function () {
   var allPorts = [];
   var portsLoaded = false;
 
+  function createFallbackImage(img) {
+    img.onerror = function () {
+      this.onerror = null; 
+      this.src = 'placeholder-icon.png';
+    };
+    return img;
+  }
+
   function renderPorts(list) {
     portContainer.innerHTML = '';
+
     list.forEach(item => {
       try {
         var a = document.createElement('a');
@@ -115,9 +122,10 @@ window.addEventListener('DOMContentLoaded', function () {
         card.className = 'port-card';
 
         var img = document.createElement('img');
-        img.src = item.image || 'icon.png';
+        img.src = item.image?.trim() ? item.image : 'placeholder-icon.png';
         img.alt = item.title || 'item';
-        img.loading = 'lazy';
+        img.loading = 'eager';
+        createFallbackImage(img);
 
         var h2 = document.createElement('h2');
         h2.textContent = item.title || '';
@@ -182,15 +190,18 @@ window.addEventListener('DOMContentLoaded', function () {
     showPage(homePage);
     renderPorts(allPorts);
   });
+
   document.getElementById('aboutLink').addEventListener('click', e => {
     e.preventDefault();
     showPage(aboutPage);
   });
+
   document.getElementById('settingsLink').addEventListener('click', e => {
     e.preventDefault();
     loadSettingsPage();
     showPage(settingsPage);
   });
+
   document.getElementById('contactLink').addEventListener('click', e => {
     e.preventDefault();
     showPage(contactPage);
@@ -298,6 +309,7 @@ window.addEventListener('DOMContentLoaded', function () {
     reader.onload = function (ev) {
       cropContainer.style.display = 'block';
       cropPreview.src = ev.target.result;
+
       if (cropper) cropper.destroy();
       cropper = new Cropper(cropPreview, {
         aspectRatio: 1,
@@ -352,8 +364,9 @@ window.addEventListener('DOMContentLoaded', function () {
     fetch('site-info.json')
       .then(r => r.json())
       .then(info => {
-        welcomeEl.textContent =
-          info.message.replace('{username}', username).replace('{version}', info.version);
+        welcomeEl.textContent = info.message
+          .replace('{username}', username)
+          .replace('{version}', info.version);
       })
       .catch(() => {
         welcomeEl.textContent = 'Welcome ' + username + '!';
@@ -375,4 +388,5 @@ window.addEventListener('DOMContentLoaded', function () {
     }
   }
   initCrate();
+
 });

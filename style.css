@@ -110,12 +110,23 @@ header{
   border-bottom: 1px solid rgba(255,255,255,0.12);
   display: flex;
   align-items: center;
-  position: relative; /* nav is centered absolute inside header */
+  justify-content: space-between;  /* <-- MAIN FIX */
+  position: relative;
   z-index: 20;
   gap: var(--space-md);
   min-height: 64px;
-  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.02) 100%); /* subtle */
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.02) 100%);
 }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  margin-left: 0 !important; /* <-- prevent shifting */
+  position: relative;
+}
+
 
 /* left region (brand) */
 .header-left {
@@ -167,16 +178,6 @@ nav a:hover{
 nav a:focus {
   outline: 2px solid rgba(255,255,255,0.06);
   outline-offset: 3px;
-}
-
-/* right region (search + profile + dashboard) */
-.header-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  position: relative; /* so dropdowns anchored correctly */
-  flex-shrink: 0;
 }
 
 /* -------------------------

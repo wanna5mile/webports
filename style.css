@@ -565,3 +565,29 @@ footer a:hover{
 @media (prefers-reduced-motion: reduce){
   * { transition: none !important; animation: none !important; }
 }
+
+.dashboard-panel {
+  position: absolute;
+  top: 65px;
+  right: 10px;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 12px;
+  width: 220px;
+  display: none; /* IMPORTANT: hidden by default */
+  flex-direction: column;
+  z-index: 9999;
+}
+
+/* When JS adds .open → dropdown becomes visible */
+.dashboard-panel.open {
+  display: flex;
+  animation: dashdrop 0.18s ease-out;
+}
+
+/* Optional animation */
+@keyframes dashdrop {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
